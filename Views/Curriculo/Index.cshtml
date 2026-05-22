@@ -1,0 +1,156 @@
+
+@model IEnumerable<TalentDesk.Models.Curriculo>
+
+@{
+    ViewData["Title"] = "Currículo Gestor";
+}
+
+@section Styles{
+    <link rel="stylesheet" href="~/css/index.css" />
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+}
+
+<div class="dashboard-container">
+
+    <!-- SIDEBAR -->
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <div class="content">
+
+            <!-- TOPO -->
+
+            <div class="topbar">
+
+                <div>
+
+                    <h1>
+                        Bem-vindo!
+                    </h1>
+
+                    <p>
+                        Gerencie e encontre os melhores talentos.
+                    </p>
+
+                </div>
+
+
+            </div>
+
+            <!-- FILTROS -->
+
+         
+
+            <!-- TABELA -->
+
+            <section class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Nome</th>
+                            <th>Área</th>
+                            <th>Formação</th>
+                            <th>Idade</th>
+                            <th>Ação</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var curriculo in Model)
+                            {
+                                <tr>
+
+                                    <td>
+
+                                        <div class="user">
+
+                                            <img src="@curriculo.FotoUrl"
+                                                 alt="Foto do candidato" />
+
+                                            <span>
+                                                @curriculo.Nome
+                                            </span>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+                                        @curriculo.Area
+                                    </td>
+
+                                    <td>
+                                        @curriculo.Formacao
+                                    </td>
+
+                                    <td>
+                                        @curriculo.Idade anos
+                                    </td>
+
+                                    <td>
+
+                                        <a asp-controller="Curriculo"
+                                           asp-action="Detalhes"
+                                           asp-route-id="@curriculo.Id"
+                                           class="view-btn">
+
+                                            Ver mais
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="5"
+                                    class="empty-message">
+
+                                    Nenhum currículo encontrado.
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+        </div>
+
+        <!-- PERFIL -->
+
+      
+
+    </main>
+
+</div>
+

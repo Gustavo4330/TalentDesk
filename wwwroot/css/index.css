@@ -1,0 +1,159 @@
+/* 
+   CSS PURO - TalentDesk Minimalista
+   Focado em alinhamento e organização dos elementos
+*/
+
+:root {
+    --primary-color: #2563eb;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --bg-body: #f9fafb;
+    --bg-card: #ffffff;
+    --border-color: #e5e7eb;
+    --font-family: 'Poppins', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    line-height: 1.5;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* TOPO */
+.topbar {
+    margin-bottom: 2rem;
+}
+
+.topbar h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.topbar p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* TABELA CONTAINER */
+.table-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+/* CABEÇALHO DA TABELA */
+thead {
+    background-color: #f8fafc;
+}
+
+thead th {
+    padding: 1rem 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* CORPO DA TABELA */
+tbody tr {
+    transition: background-color 0.2s;
+}
+
+tbody tr:hover {
+    background-color: #f3f4f6;
+}
+
+tbody td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+/* ALINHAMENTO DA FOTO E NOME */
+.user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+
+.user span {
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+/* COLUNAS DE TEXTO */
+td {
+    color: var(--text-muted);
+}
+
+/* BOTÃO VER MAIS */
+.view-btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.view-btn:hover {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+/* MENSAGEM VAZIA */
+.empty-message {
+    text-align: center;
+    padding: 3rem !important;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* RESPONSIVIDADE BÁSICA */
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    thead th, tbody td {
+        padding: 0.75rem 1rem;
+    }
+}
