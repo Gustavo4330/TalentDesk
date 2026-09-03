@@ -4,30 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - Currículo Gestor</title>
-    <link rel="stylesheet" href="~/css/style.css" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
-    <div class="dashboard-container">
-
-        <!-- SIDEBAR -->
-    
-
-           
-
-        <!-- MAIN -->
-        <main class="main">
-
-            <div class="content">
-
-                @RenderBody()
-
-            </div>
-
-        </main>
-
-    </div>
-
+    @RenderBody()
     <script src="~/js/script.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

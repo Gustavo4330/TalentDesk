@@ -1,156 +1,299 @@
 
 @model IEnumerable<TalentDesk.Models.Curriculo>
 
+@using System.Text.Json
+
 @{
     ViewData["Title"] = "Currículo Gestor";
+    var candidatosJson = JsonSerializer.Serialize(Model ?? Enumerable.Empty<TalentDesk.Models.Curriculo>());
+    var candidatoSelecionado = Model?.FirstOrDefault() ?? new TalentDesk.Models.Curriculo();
 }
 
-@section Styles{
+@section Styles {
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/index.css" />
-
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
-
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet">
 }
 
-<div class="dashboard-container">
-
-    <!-- SIDEBAR -->
-
-
-    <!-- MAIN -->
-
-    <main class="main">
-
-        <div class="content">
-
-            <!-- TOPO -->
-
-            <div class="topbar">
-
-                <div>
-
-                    <h1>
-                        Bem-vindo!
-                    </h1>
-
-                    <p>
-                        Gerencie e encontre os melhores talentos.
-                    </p>
-
-                </div>
-
-
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M7 3.5A2.5 2.5 0 0 1 9.5 1h7A2.5 2.5 0 0 1 19 3.5v13.9a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 7 17.4V3.5Zm2.5-.5a.5.5 0 0 0-.5.5v13.9c0 .28.22.5.5.5h7a.5.5 0 0 0 .5-.5V3.5a.5.5 0 0 0-.5-.5h-7Zm1.5 3h4v1.5h-4V6Zm0 3h5v1.5h-5V9Zm0 3h5v1.5h-5v-1.5Z"/>
+                </svg>
             </div>
-
-            <!-- FILTROS -->
-
-         
-
-            <!-- TABELA -->
-
-            <section class="table-container">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Nome</th>
-                            <th>Área</th>
-                            <th>Formação</th>
-                            <th>Idade</th>
-                            <th>Ação</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        @if (Model != null && Model.Any())
-                        {
-                            @foreach (var curriculo in Model)
-                            {
-                                <tr>
-
-                                    <td>
-
-                                        <div class="user">
-
-                                            <img src="@curriculo.FotoUrl"
-                                                 alt="Foto do candidato" />
-
-                                            <span>
-                                                @curriculo.Nome
-                                            </span>
-
-                                        </div>
-
-                                    </td>
-
-                                    <td>
-                                        @curriculo.Area
-                                    </td>
-
-                                    <td>
-                                        @curriculo.Formacao
-                                    </td>
-
-                                    <td>
-                                        @curriculo.Idade anos
-                                    </td>
-
-                                    <td>
-
-                                        <a asp-controller="Curriculo"
-                                           asp-action="Detalhes"
-                                           asp-route-id="@curriculo.Id"
-                                           class="view-btn">
-
-                                            Ver mais
-
-                                        </a>
-
-                                    </td>
-
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-
-                                <td colspan="5"
-                                    class="empty-message">
-
-                                    Nenhum currículo encontrado.
-
-                                </td>
-
-                            </tr>
-                        }
-
-                    </tbody>
-
-                </table>
-
-            </section>
-
+            <div class="brand-text">
+                <span>Currículo</span>
+                <span>Gestor</span>
+            </div>
         </div>
 
-        <!-- PERFIL -->
+        <nav class="sidebar-menu" aria-label="Menu principal">
+            <button class="nav-item active" type="button">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24"><path d="M4 11.2V5.8A1.8 1.8 0 0 1 5.8 4h5.7L18 10.9v7.3a1.8 1.8 0 0 1-1.8 1.8H5.8A1.8 1.8 0 0 1 4 18.2v-7Zm8.8-6.5 5.1 5.1h-4.3a.8.8 0 0 1-.8-.8V4.7Z"/></svg>
+                </span>
+                <span>Início</span>
+            </button>
+            <button class="nav-item" type="button">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24"><path d="M5 4.5A2.5 2.5 0 0 1 7.5 2h9A2.5 2.5 0 0 1 19 4.5v15a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 5 19.5v-15Zm2.5-.5a.5.5 0 0 0-.5.5v15c0 .28.22.5.5.5h9a.5.5 0 0 0 .5-.5v-15a.5.5 0 0 0-.5-.5h-9Zm2 2.5h5v2h-5v-2Zm0 4h7v2h-7v-2Zm0 4h7v2h-7v-2Z"/></svg>
+                </span>
+                <span>Currículos</span>
+            </button>
+            <button class="nav-item" type="button">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24"><path d="m12 21-1.45-1.32C5.4 15.36 2 12.28 2 8.5A4.5 4.5 0 0 1 6.5 4c1.74 0 3.41.81 4.5 2.09A6.02 6.02 0 0 1 15.5 4 4.5 4.5 0 0 1 20 8.5c0 3.78-3.4 6.86-8.55 11.18L12 21Z"/></svg>
+                </span>
+                <span>Favoritos</span>
+            </button>
+            <button class="nav-item" type="button">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24"><path d="M5 20.5V18h14v2.5H5Zm2-3.5h2.5v-5H7v5Zm3.5 0h2.5v-8h-2.5v8Zm3.5 0H17v-11h-2.5v11Z"/></svg>
+                </span>
+                <span>Relatórios</span>
+            </button>
+            <button class="nav-item" type="button">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.18l-2.39.96a7.03 7.03 0 0 0-1.63-.94L14.5 2.5a.5.5 0 0 0-.5-.5h-3.99a.5.5 0 0 0-.5.5l-.34 2.46c-.57.23-1.11.55-1.63.94l-2.39-.96a.5.5 0 0 0-.61.18L2.71 9.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .61.18l2.39-.96c.52.39 1.06.71 1.63.94l.34 2.46c.04.28.25.5.5.5h3.99c.25 0 .46-.22.5-.5l.34-2.46c.57-.23 1.11-.55 1.63-.94l2.39.96a.5.5 0 0 0 .61-.18l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>
+                </span>
+                <span>Configurações</span>
+            </button>
+        </nav>
+    </aside>
 
-      
+    <main class="main-panel">
+        <header class="topbar">
+            <div class="topbar-copy">
+                <h1>Bem-vindo!</h1>
+                <p>Gerencie e encontre os melhores talentos.</p>
+            </div>
 
+            <div class="topbar-actions">
+                <label class="searchbox" aria-label="Buscar currículo">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.8l4.4 4.4 1.4-1.4-4.4-4.4A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/></svg>
+                    <input id="globalSearch" type="search" placeholder="Buscar currículo..." aria-label="Buscar currículo" />
+                </label>
+
+                <button class="notify-button" type="button" aria-label="Notificações">
+                    <svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6.5V11a7 7 0 0 0-5-6.71V4a2 2 0 1 0-4 0v.29A7 7 0 0 0 5 11v4.5L3 18v1h18v-1l-2-2.5Z"/></svg>
+                </button>
+
+                <a asp-controller="Curriculo" asp-action="Login" class="auth-button">
+                    Entrar / Criar conta
+                </a>
+            </div>
+        </header>
+
+        <section class="content-area">
+            <div class="content-main">
+                <div class="section-header">
+                    <h2>Currículos</h2>
+                </div>
+
+                <div class="filters-card">
+                    <div class="filters-row">
+                        <label class="field field-search">
+                            <span class="field-label">Buscar por nome</span>
+                            <div class="input-wrap">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.8l4.4 4.4 1.4-1.4-4.4-4.4A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/></svg>
+                                <input id="searchName" type="text" placeholder="Digite o nome..." />
+                            </div>
+                        </label>
+
+                        <label class="field">
+                            <span class="field-label">Área de atuação</span>
+                            <select id="filterArea">
+                                <option value="">Todas</option>
+                                <option value="Recursos Humanos">Recursos Humanos</option>
+                                <option value="Desenvolvimento de Software">Desenvolvimento de Software</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Análise de Dados">Análise de Dados</option>
+                                <option value="Design">Design</option>
+                                <option value="Administração">Administração</option>
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field-label">Formação acadêmica</span>
+                            <select id="filterFormacao">
+                                <option value="">Todas</option>
+                                <option value="Psicologia">Psicologia</option>
+                                <option value="Ciência da Computação">Ciência da Computação</option>
+                                <option value="Publicidade e Propaganda">Publicidade e Propaganda</option>
+                                <option value="Estatística">Estatística</option>
+                                <option value="Design Gráfico">Design Gráfico</option>
+                                <option value="Administração">Administração</option>
+                            </select>
+                        </label>
+
+                        <label class="field">
+                            <span class="field-label">Idade</span>
+                            <select id="filterIdade">
+                                <option value="">Todas</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                                <option value="27">27</option>
+                                <option value="28">28</option>
+                                <option value="29">29</option>
+                            </select>
+                        </label>
+
+                        <button class="filter-button" type="button">
+                            <svg viewBox="0 0 24 24"><path d="M8 4h8v2h-1l-3 4.5V20l-2-1v-4.5L9 6H8V4Zm-1.5 0H3v2h3.5L8 9.5V18l2 1v-8.5L13.5 6H18V4h-5.5L12 4.5 11.5 4H6.5l-1 .5L6.5 4Z"/></svg>
+                            Filtrar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Área de atuação</th>
+                                <th>Formação acadêmica</th>
+                                <th>Idade</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var curriculo in Model)
+                                {
+                                    <tr data-id="@curriculo.Id"
+                                        data-name="@curriculo.Nome"
+                                        data-area="@curriculo.Area"
+                                        data-formacao="@curriculo.Formacao"
+                                        data-idade="@curriculo.Idade">
+                                        <td>
+                                            <div class="user-cell">
+                                                <img src="@curriculo.FotoUrl" alt="Foto de @curriculo.Nome" />
+                                                <span>@curriculo.Nome</span>
+                                            </div>
+                                        </td>
+                                        <td>@curriculo.Area</td>
+                                        <td>@curriculo.FormacaoDetalhada</td>
+                                        <td>@curriculo.Idade anos</td>
+                                        <td>
+                                            <button type="button" class="view-btn" data-id="@curriculo.Id">
+                                                Ver mais
+                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h10.6l-4.3-4.3 1.4-1.4L20 12l-6.3 6.7-1.4-1.4L16.6 13H6v-1Z"/></svg>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" aria-label="Paginação">
+                    <button class="page-button active" type="button">1</button>
+                    <button class="page-button" type="button">2</button>
+                    <button class="page-button" type="button">3</button>
+                    <span class="page-dots">...</span>
+                    <button class="page-button" type="button">10</button>
+                    <button class="page-button next" type="button">›</button>
+                </div>
+            </div>
+
+            <aside class="details-panel open" id="detailsPanel" aria-live="polite">
+                <div class="panel-header">
+                    <h3 id="detailName">@candidatoSelecionado.Nome</h3>
+                    <button id="closePanel" class="close-panel" type="button" aria-label="Fechar painel">×</button>
+                </div>
+
+                <div class="panel-profile">
+                    <img id="detailImage" src="@candidatoSelecionado.FotoUrl" alt="Foto de @candidatoSelecionado.Nome" />
+                    <div class="contact-list">
+                        <div class="contact-item">
+                            <span class="contact-icon">✉</span>
+                            <span id="detailEmail">@candidatoSelecionado.Email</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">☎</span>
+                            <span id="detailPhone">@candidatoSelecionado.Telefone</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">⌖</span>
+                            <span id="detailCity">@candidatoSelecionado.Cidade</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">in</span>
+                            <span id="detailLinkedin">@candidatoSelecionado.Linkedin</span>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="info-section">
+                    <h4>
+                        <span class="section-icon">◔</span>
+                        Resumo profissional
+                    </h4>
+                    <p id="detailResumo">@candidatoSelecionado.Resumo</p>
+                </section>
+
+                <section class="info-section">
+                    <h4>
+                        <span class="section-icon">▣</span>
+                        Experiência profissional
+                    </h4>
+                    <div id="detailExperiencia" class="timeline">
+                        @if (candidatoSelecionado.Experiencias != null && candidatoSelecionado.Experiencias.Any())
+                        {
+                            foreach (var experiencia in candidatoSelecionado.Experiencias)
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <h5>@experiencia.Cargo – @experiencia.Empresa</h5>
+                                        <span>@experiencia.Periodo</span>
+                                        <p>@experiencia.Descricao</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </section>
+
+                <section class="info-section">
+                    <h4>
+                        <span class="section-icon">◫</span>
+                        Formação acadêmica
+                    </h4>
+                    <div class="academic-box">
+                        <p id="detailFormacao">@candidatoSelecionado.FormacaoDetalhada</p>
+                        <p class="academic-school">Universidade de São Paulo (USP)</p>
+                        <p class="academic-date">Conclusão: Dez/2018</p>
+                    </div>
+                </section>
+
+                <section class="info-section">
+                    <h4>
+                        <span class="section-icon">★</span>
+                        Habilidades
+                    </h4>
+                    <div id="detailSkills" class="skill-list">
+                        @if (candidatoSelecionado.Habilidades != null && candidatoSelecionado.Habilidades.Any())
+                        {
+                            foreach (var skill in candidatoSelecionado.Habilidades)
+                            {
+                                <span class="skill-tag">@skill</span>
+                            }
+                        }
+                    </div>
+                </section>
+            </aside>
+        </section>
     </main>
-
 </div>
+
+<script>
+    window.curriculos = @Html.Raw(candidatosJson);
+</script>
 
