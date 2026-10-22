@@ -103,7 +103,11 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'Teste Automatizado','teste.auto@example.com','$2a$11$ln0PLtcoDRdeo4QT4TXJQeTqKTORzjNdIZMmPUEQuFcufkDcYsu42','+551199999999','1990-01-01','https://example.com/photo.jpg','2026-09-03 17:27:47',1),(2,'Teste2','teste2.auto@example.com','$2a$11$xcmbzTndGprmz4h6n52fhOfgZv.7GmrwrDzjMNyM2EpCBIT6jxbU6','+551199999998','1991-02-02','https://example.com/photo2.jpg','2026-09-03 17:29:41',1),(3,'gustavo','123@123.com.br','$2a$11$JDCC5MMkTSPV9jxQ8LgkmOfJNYhceN3mIyzVCW0MnWkQdS6C0CJP6','123123123','2026-09-03','https://chatgpt.com/','2026-09-03 17:42:50',1),(4,'Gustavo Moreira','123@123.com','$2a$11$dTxuquKwxrClAb2pw5F.O.LTmflFHirSy7w32vFAxoz3U6LECSxY6','11 94753-7291','2026-09-23','http://localhost:5216/','2026-09-03 18:06:13',1),(5,'Gustavo','123@123','$2a$11$zR6UAG6qBqWCTwAxCD4NMuwWpKayT1g8s1GfBTG1PXFKilht8O9HK','1234567','2026-09-30','http://localhost:5216/','2026-09-03 18:11:13',1);
+INSERT INTO `usuarios` VALUES (1,'Teste Automatizado','teste.auto@example.com','$2a$11$ln0PLtcoDRdeo4QT4TXJQeTqKTORzjNdIZMmPUEQuFcufkDcYsu42','+551199999999','1990-01-01','https://example.com/photo.jpg','2026-09-03 17:27:47',1),
+(2,'Teste2','teste2.auto@example.com','$2a$11$xcmbzTndGprmz4h6n52fhOfgZv.7GmrwrDzjMNyM2EpCBIT6jxbU6','+551199999998','1991-02-02','https://example.com/photo2.jpg','2026-09-03 17:29:41',1),
+(3,'gustavo','123@123.com.br','$2a$11$JDCC5MMkTSPV9jxQ8LgkmOfJNYhceN3mIyzVCW0MnWkQdS6C0CJP6','123123123','2026-09-03','https://chatgpt.com/','2026-09-03 17:42:50',1),
+(4,'Gustavo Moreira','123@123.com','$2a$11$dTxuquKwxrClAb2pw5F.O.LTmflFHirSy7w32vFAxoz3U6LECSxY6','11 94753-7291','2026-09-23','http://localhost:5216/','2026-09-03 18:06:13',1),
+(5,'Gustavo','123@123','$2a$11$zR6UAG6qBqWCTwAxCD4NMuwWpKayT1g8s1GfBTG1PXFKilht8O9HK','1234567','2026-09-30','http://localhost:5216/','2026-09-03 18:11:13',1);
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

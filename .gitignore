@@ -1,2 +1,12 @@
 /bin
 /obj
+.vs/
+*.user
+
+# Fotos enviadas pelo sistema
+wwwroot/uploads/
+
+# Banco de dados SQLite (criado automaticamente ao rodar o sistema)
+*.db
+*.db-shm
+*.db-wal
