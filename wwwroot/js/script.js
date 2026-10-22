@@ -1,100 +1,73 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
-    const rows = Array.from(document.querySelectorAll('tbody tr[data-id]'));
-    const searchName = document.getElementById('searchName');
-    const globalSearch = document.getElementById('globalSearch');
-    const filterArea = document.getElementById('filterArea');
-    const filterFormacao = document.getElementById('filterFormacao');
-    const filterIdade = document.getElementById('filterIdade');
-    const filterButton = document.querySelector('.filter-button');
-    const closePanelButton = document.getElementById('closePanel');
-    const detailsPanel = document.getElementById('detailsPanel');
-    const allCandidates = Array.isArray(window.curriculos) ? window.curriculos : [];
+// Toda a regra de negócio fica no C# (controllers e repositórios).
+// Este arquivo só cuida de pequenos comportamentos da interface.
+document.addEventListener('DOMContentLoaded', () => {
+    // Selects de filtro: envia o formulário assim que muda a opção
+    document.querySelectorAll('select[data-auto-submit]').forEach((select) => {
+        select.addEventListener('change', () => select.form?.submit());
+    });
 
-    const showCandidate = (candidate) => {
-        if (!candidate || !detailsPanel) return;
-
-        document.getElementById('detailName').textContent = candidate.Nome || 'Currículo';
-        document.getElementById('detailImage').src = candidate.FotoUrl || 'https://i.pravatar.cc/150';
-        document.getElementById('detailEmail').textContent = candidate.Email || 'Sem e-mail';
-        document.getElementById('detailPhone').textContent = candidate.Telefone || 'Sem telefone';
-        document.getElementById('detailCity').textContent = candidate.Cidade || 'Sem cidade';
-        document.getElementById('detailLinkedin').textContent = candidate.Linkedin || 'Sem LinkedIn';
-        document.getElementById('detailResumo').textContent = candidate.Resumo || '';
-
-        const experienciaContainer = document.getElementById('detailExperiencia');
-        experienciaContainer.innerHTML = '';
-        if (candidate.Experiencias && candidate.Experiencias.length) {
-            candidate.Experiencias.forEach((experiencia) => {
-                const item = document.createElement('div');
-                item.className = 'timeline-item';
-                item.innerHTML = `
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h5>${experiencia.Cargo || 'Cargo'} – ${experiencia.Empresa || 'Empresa'}</h5>
-                        <span>${experiencia.Periodo || ''}</span>
-                        <p>${experiencia.Descricao || ''}</p>
-                    </div>
-                `;
-                experienciaContainer.appendChild(item);
-            });
-        }
-
-        document.getElementById('detailFormacao').textContent = candidate.FormacaoDetalhada || candidate.Formacao || 'Formação não informada';
-
-        const skillsContainer = document.getElementById('detailSkills');
-        skillsContainer.innerHTML = '';
-        if (candidate.Habilidades && candidate.Habilidades.length) {
-            candidate.Habilidades.forEach((skill) => {
-                const tag = document.createElement('span');
-                tag.className = 'skill-tag';
-                tag.textContent = skill;
-                skillsContainer.appendChild(tag);
-            });
-        }
-
-        detailsPanel.classList.add('open');
-    };
-
-    const filterRows = () => {
-        const nameValue = (searchName?.value || '').trim().toLowerCase();
-        const globalValue = (globalSearch?.value || '').trim().toLowerCase();
-        const areaValue = filterArea?.value || '';
-        const formacaoValue = filterFormacao?.value || '';
-        const idadeValue = filterIdade?.value || '';
-
-        rows.forEach((row) => {
-            const candidateName = (row.dataset.name || '').toLowerCase();
-            const candidateArea = row.dataset.area || '';
-            const candidateFormacao = row.dataset.formacao || '';
-            const candidateIdade = row.dataset.idade || '';
-            const matchesName = !nameValue && !globalValue ? true : candidateName.includes(nameValue || globalValue);
-            const matchesArea = !areaValue || candidateArea === areaValue;
-            const matchesFormacao = !formacaoValue || candidateFormacao === formacaoValue;
-            const matchesIdade = !idadeValue || candidateIdade === idadeValue;
-
-            row.style.display = matchesName && matchesArea && matchesFormacao && matchesIdade ? '' : 'none';
-        });
-    };
-
-    searchName?.addEventListener('input', filterRows);
-    globalSearch?.addEventListener('input', filterRows);
-    filterArea?.addEventListener('change', filterRows);
-    filterFormacao?.addEventListener('change', filterRows);
-    filterIdade?.addEventListener('change', filterRows);
-    filterButton?.addEventListener('click', filterRows);
-
-    document.querySelectorAll('.view-btn').forEach((button) => {
-        button.addEventListener('click', () => {
-            const id = Number(button.dataset.id);
-            const candidate = allCandidates.find((item) => Number(item.Id) === id);
-            if (candidate) showCandidate(candidate);
+    // Pede confirmação antes de ações perigosas (ex.: excluir currículo)
+    document.querySelectorAll('form[data-confirmar]').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+            if (!window.confirm(form.dataset.confirmar)) {
+                event.preventDefault();
+            }
         });
     });
 
-    closePanelButton?.addEventListener('click', () => {
-        detailsPanel?.classList.remove('open');
+    // Menus suspensos (<details>): abre um de cada vez e fecha ao clicar fora
+    const menus = Array.from(document.querySelectorAll('details.menu-acoes, details.notificacoes, details.mais-filtros'));
+
+    menus.forEach((menu) => {
+        menu.addEventListener('toggle', () => {
+            if (!menu.open) return;
+            menus.forEach((outro) => {
+                if (outro !== menu) outro.open = false;
+            });
+        });
     });
 
-    const firstCandidate = allCandidates[0];
-    if (firstCandidate) showCandidate(firstCandidate);
+    document.addEventListener('click', (event) => {
+        menus.forEach((menu) => {
+            if (menu.open && !menu.contains(event.target)) menu.open = false;
+        });
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') menus.forEach((menu) => { menu.open = false; });
+    });
+
+    // Foto que não carregou: remove a imagem e deixa aparecer as iniciais
+    document.querySelectorAll('.avatar img').forEach((img) => {
+        const remover = () => img.remove();
+        if (img.complete && img.naturalWidth === 0) remover();
+        else img.addEventListener('error', remover);
+    });
+
+    // Dica flutuante dos gráficos de relatórios (colunas e bolinhas do mapa)
+    const dica = document.querySelector('.dica-flutuante');
+    if (dica) {
+        const mostrar = (alvo) => {
+            const caixa = alvo.getBoundingClientRect();
+            dica.textContent = alvo.dataset.dica;
+            dica.style.left = `${caixa.left + caixa.width / 2}px`;
+            dica.style.top = `${caixa.top}px`;
+            dica.hidden = false;
+        };
+        const esconder = () => { dica.hidden = true; };
+
+        document.querySelectorAll('[data-dica]').forEach((alvo) => {
+            alvo.addEventListener('mouseenter', () => mostrar(alvo));
+            alvo.addEventListener('focus', () => mostrar(alvo));
+            alvo.addEventListener('mouseleave', esconder);
+            alvo.addEventListener('blur', esconder);
+        });
+        window.addEventListener('scroll', esconder, { passive: true });
+    }
+
+    // Esconde a mensagem de sucesso depois de alguns segundos
+    const toast = document.querySelector('.toast');
+    if (toast) {
+        window.setTimeout(() => toast.classList.add('saindo'), 4000);
+    }
 });

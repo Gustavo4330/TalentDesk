@@ -266,7 +266,7 @@ button {
 
 .filters-row {
     display: grid;
-    grid-template-columns: minmax(180px, 1.3fr) repeat(3, minmax(130px, 1fr)) auto;
+    grid-template-columns: minmax(180px, 1.3fr) repeat(3, minmax(130px, 1fr));
     gap: 14px;
     align-items: end;
 }
@@ -320,21 +320,18 @@ button {
     padding: 0 12px;
 }
 
-.filter-button {
-    height: 45px;
-    border: none;
-    border-radius: 10px;
-    background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 0 18px;
-    font-weight: 600;
-    min-width: 118px;
-    box-shadow: 0 4px 12px rgba(91, 33, 182, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+.field select {
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field select:hover {
+    border-color: #c4b5fd;
+}
+
+.field select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
 }
 
 .filter-button:hover,
@@ -724,10 +721,6 @@ button {
         grid-template-columns: 1fr;
     }
 
-    .filter-button {
-        width: 100%;
-    }
-
     .table-card {
         overflow-x: auto;
     }
@@ -739,4 +732,104 @@ button {
     .panel-header h3 {
         font-size: 1.5rem;
     }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 32px 16px !important;
+    color: var(--muted);
+}
+
+.empty-state a {
+    margin-left: 6px;
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.empty-state a:hover {
+    text-decoration: underline;
+}
+
+/* Campo de idade: esconde as setinhas do input number */
+#filterIdade::-webkit-outer-spin-button,
+#filterIdade::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#filterIdade {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* ===== Menu como link ===== */
+a.nav-item {
+    text-decoration: none;
+}
+
+.nav-badge {
+    margin-left: auto;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-grid;
+    place-items: center;
+}
+
+/* ===== Favoritos ===== */
+tbody tr[id^="curriculo-"] {
+    scroll-margin-top: 120px;
+}
+
+.row-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.row-actions form {
+    margin: 0;
+}
+
+.fav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: #c4c1d4;
+    display: inline-grid;
+    place-items: center;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.fav-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.fav-btn:hover {
+    color: #e11d48;
+    border-color: #fecdd3;
+    background: #fff1f2;
+    transform: translateY(-1px);
+}
+
+.fav-btn.active {
+    color: #e11d48;
+    border-color: #fda4af;
+    background: #fff1f2;
+}
+
+.fav-btn:focus-visible {
+    outline: 3px solid rgba(225, 29, 72, 0.3);
+    outline-offset: 2px;
 }
