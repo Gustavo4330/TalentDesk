@@ -25,13 +25,11 @@ namespace TalentDesk.Controllers
             return View("EmBreve");
         }
 
+        // Endereço antigo: a aba agora tem controller próprio
         [HttpGet]
         public IActionResult Configuracoes()
         {
-            ViewData["Menu"] = "configuracoes";
-            ViewData["Title"] = "Configurações";
-            ViewData["Descricao"] = "Em breve você poderá editar seus dados, trocar a senha e ajustar preferências do sistema.";
-            return View("EmBreve");
+            return RedirectToAction("Index", "Configuracoes");
         }
     }
 }

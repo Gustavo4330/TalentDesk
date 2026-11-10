@@ -26,7 +26,7 @@
     <aside class="sidebar">
         <a class="brand" asp-controller="Curriculo" asp-action="Index">
             <span class="brand-icon">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7l-5-5Zm-1 1.9L17.1 8H13V3.9ZM8 12h8v1.6H8V12Zm0 3.4h8V17H8v-1.6Zm0-6.8h3.5v1.6H8V8.6Z"/></svg>
+                <img class="brand-logo" src="~/images/logo-talentdesk.jpeg" asp-append-version="true" alt="" />
             </span>
             <span class="brand-text">Talent<br />Desk</span>
         </a>
@@ -56,7 +56,7 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h2V10H4v10Zm4 0h2V4H8v16Zm4 0h2v-7h-2v7Zm4 0h2V8h-2v12Zm4 0h2v-4h-2v4Z"/></svg>
                 <span>Dashboard</span>
             </a>
-            <a class="@Ativo("configuracoes")" asp-controller="Painel" asp-action="Configuracoes">
+            <a class="@Ativo("configuracoes")" asp-controller="Configuracoes" asp-action="Index">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.18l-2.39.96a7.03 7.03 0 0 0-1.63-.94L14.5 2.5a.5.5 0 0 0-.5-.5h-3.99a.5.5 0 0 0-.5.5l-.34 2.46c-.57.23-1.11.55-1.63.94l-2.39-.96a.5.5 0 0 0-.61.18L2.71 9.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .61.18l2.39-.96c.52.39 1.06.71 1.63.94l.34 2.46c.04.28.25.5.5.5h3.99c.25 0 .46-.22.5-.5l.34-2.46c.57-.23 1.11-.55 1.63-.94l2.39.96a.5.5 0 0 0 .61-.18l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>
                 <span>Configurações</span>
             </a>
@@ -71,7 +71,13 @@
         <div class="sidebar-user">
             @if (logado)
             {
-                <span class="avatar avatar-light">@SessaoUsuario.Iniciais(sessao)</span>
+                <span class="avatar avatar-light">
+                    @SessaoUsuario.Iniciais(sessao)
+                    @if (SessaoUsuario.Foto(sessao) is string foto)
+                    {
+                        <img src="@foto" alt="" />
+                    }
+                </span>
                 <div class="sidebar-user-info">
                     <strong>@SessaoUsuario.Nome(sessao)</strong>
                     <span>@SessaoUsuario.Perfil(sessao)</span>

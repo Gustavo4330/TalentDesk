@@ -23,5 +23,8 @@ namespace TalentDesk.Models
         public DateTime? DataNascimento { get; set; }
 
         public string? FotoUrl { get; set; }
+
+        // Preenchida pelo banco; não vem do formulário de cadastro
+        public DateTime? DataCadastro { get; set; }
     }
 }

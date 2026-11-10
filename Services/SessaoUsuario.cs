@@ -8,12 +8,20 @@ namespace TalentDesk.Services
         private const string ChaveId = "UsuarioId";
         private const string ChaveNome = "UsuarioNome";
         private const string ChavePerfil = "UsuarioPerfil";
+        private const string ChaveFoto = "UsuarioFoto";
 
-        public static void Entrar(ISession sessao, int id, string nome, string perfil)
+        public static void Entrar(ISession sessao, int id, string nome, string perfil, string? foto = null)
         {
             sessao.SetInt32(ChaveId, id);
-            sessao.SetString(ChaveNome, nome);
             sessao.SetString(ChavePerfil, perfil);
+            AtualizarDados(sessao, nome, foto);
+        }
+
+        // Usado quando o usuário edita o perfil nas Configurações
+        public static void AtualizarDados(ISession sessao, string nome, string? foto)
+        {
+            sessao.SetString(ChaveNome, nome);
+            sessao.SetString(ChaveFoto, foto ?? string.Empty);
         }
 
         public static void Sair(ISession sessao)
@@ -22,6 +30,14 @@ namespace TalentDesk.Services
         }
 
         public static bool EstaLogado(ISession sessao) => sessao.GetInt32(ChaveId).HasValue;
+
+        public static int? Id(ISession sessao) => sessao.GetInt32(ChaveId);
+
+        public static string? Foto(ISession sessao)
+        {
+            string? foto = sessao.GetString(ChaveFoto);
+            return string.IsNullOrWhiteSpace(foto) ? null : foto;
+        }
 
         public static string? Nome(ISession sessao) => sessao.GetString(ChaveNome);
 

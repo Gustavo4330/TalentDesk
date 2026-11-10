@@ -3,21 +3,21 @@
    ========================================================= */
 
 :root {
-    --roxo-900: #3b1782;
-    --roxo-800: #4c1d95;
+    --roxo-900: #281545;
+    --roxo-800: #351b5e;
     --roxo-700: #5b21b6;
     --roxo-600: #6d28d9;
-    --roxo-500: #7c3aed;
-    --roxo-100: #efe9fe;
-    --roxo-50: #f7f4ff;
+    --roxo-500: #8b5cf6;
+    --roxo-100: #eee5ff;
+    --roxo-50: #f8f5ff;
 
-    --fundo: #f6f5fb;
+    --fundo: #f5f2fc;
     --painel: #ffffff;
-    --borda: #e8e6f0;
-    --borda-suave: #f0eef6;
-    --texto: #1f1b3d;
-    --texto-2: #4b4764;
-    --texto-3: #6b6685;
+    --borda: #e8e3f2;
+    --borda-suave: #f1edf7;
+    --texto: #21183b;
+    --texto-2: #4b4268;
+    --texto-3: #706987;
 
     --verde: #15803d;
     --verde-fundo: #e7f8ee;
@@ -28,10 +28,10 @@
     --rosa: #e11d48;
     --rosa-fundo: #ffe4ec;
 
-    --raio: 16px;
+    --raio: 18px;
     --raio-sm: 12px;
-    --sombra: 0 1px 2px rgba(31, 27, 61, 0.04), 0 4px 16px rgba(31, 27, 61, 0.04);
-    --sombra-dropdown: 0 12px 32px rgba(31, 27, 61, 0.14);
+    --sombra: 0 2px 6px rgba(53, 27, 94, 0.025), 0 12px 30px rgba(83, 56, 132, 0.07);
+    --sombra-dropdown: 0 16px 38px rgba(39, 24, 69, 0.16);
 }
 
 *,
@@ -117,7 +117,7 @@ h1, h2, h3, p {
     gap: 28px;
     padding: 24px 14px 18px;
     color: #fff;
-    background: linear-gradient(180deg, var(--roxo-800) 0%, #5320b8 55%, #6a2fe0 100%);
+    background: radial-gradient(ellipse at 0% 100%, rgba(105, 43, 170, .8), transparent 44%), linear-gradient(180deg, #19152f 0%, #21183d 62%, #2d1c50 100%);
     overflow-y: auto;
 }
 
@@ -142,6 +142,17 @@ h1, h2, h3, p {
 .brand-icon svg {
     width: 24px;
     height: 24px;
+}
+
+.brand-icon {
+    overflow: hidden;
+}
+
+.brand-icon .brand-logo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .brand-text {
@@ -180,8 +191,8 @@ h1, h2, h3, p {
 }
 
 .nav-item.active {
-    background: rgba(255, 255, 255, 0.18);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+    background: linear-gradient(105deg, rgba(137, 73, 220, .82), rgba(91, 33, 182, .58));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 8px 20px rgba(15, 8, 34, .18);
     color: #fff;
     font-weight: 600;
 }
@@ -337,8 +348,8 @@ h1, h2, h3, p {
     align-items: center;
     gap: 16px;
     padding: 20px 28px;
-    background: var(--painel);
-    border-bottom: 1px solid var(--borda);
+    background: radial-gradient(ellipse at 78% 0%, rgba(230, 187, 255, .28), transparent 34%), linear-gradient(105deg, #f7f4ff, #fbf9ff 72%);
+    border-bottom: 1px solid rgba(112, 83, 155, .08);
 }
 
 .topbar-title h1 {
@@ -404,7 +415,7 @@ h1, h2, h3, p {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--roxo-600) 0%, var(--roxo-800) 100%);
+    background: linear-gradient(135deg, #7c3aed 0%, #5120a8 100%);
     color: #fff;
     box-shadow: 0 6px 16px rgba(91, 33, 182, 0.25);
 }
@@ -1019,7 +1030,7 @@ a.card-resumo:hover {
 
 .tabela th {
     padding: 18px 22px;
-    background: #fbfaff;
+    background: #f8f6fc;
     border-bottom: 1px solid var(--borda);
     text-align: left;
     font-size: 0.93rem;
@@ -2236,7 +2247,7 @@ svg.mapa {
     display: grid;
     place-items: center;
     padding: 24px 16px;
-    background: linear-gradient(135deg, var(--roxo-800) 0%, #6a2fe0 100%);
+    background: radial-gradient(ellipse at 85% 5%, rgba(224, 186, 255, .45), transparent 36%), linear-gradient(135deg, #f4f0fc 0%, #fbfaff 100%);
 }
 
 .entrar-card {
@@ -2244,7 +2255,8 @@ svg.mapa {
     padding: 34px;
     border-radius: 20px;
     background: #fff;
-    box-shadow: 0 24px 60px rgba(20, 10, 60, 0.3);
+    border: 1px solid rgba(91, 33, 182, .08);
+    box-shadow: 0 24px 60px rgba(53, 27, 94, 0.12);
 }
 
 .entrar-card h1 {
@@ -2304,6 +2316,197 @@ svg.mapa {
     background: #f5f5f8;
     white-space: pre-wrap;
     word-break: break-word;
+}
+
+/* =================== Configurações =================== */
+
+.config-pagina {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.config-pagina .formulario {
+    margin-top: 0;
+}
+
+/* Ao clicar nas abas, a seção não fica colada no topo */
+.config-pagina [id] {
+    scroll-margin-top: 20px;
+}
+
+.config-resumo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    padding: 22px;
+    border: 1px solid var(--borda);
+    border-radius: var(--raio);
+    background: var(--painel);
+    box-shadow: var(--sombra);
+}
+
+.config-resumo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.config-resumo-info strong {
+    font-size: 1.25rem;
+    font-weight: 800;
+    overflow-wrap: anywhere;
+}
+
+.config-resumo-info > span {
+    color: var(--texto-3);
+    overflow-wrap: anywhere;
+}
+
+.config-resumo-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+    color: var(--texto-3);
+    font-size: 0.88rem;
+}
+
+.config-selo {
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--roxo-100);
+    color: var(--roxo-700);
+    font-weight: 700;
+}
+
+.config-abas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.config-abas a {
+    padding: 8px 16px;
+    border: 1px solid var(--borda);
+    border-radius: 999px;
+    background: var(--painel);
+    color: var(--texto-2);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.config-abas a:hover {
+    border-color: var(--roxo-500);
+    color: var(--roxo-700);
+}
+
+.config-foto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+}
+
+.config-foto .campo {
+    flex: 1 1 260px;
+}
+
+.config-foto input[type="file"] {
+    padding: 10px 14px;
+}
+
+.campo-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--texto-2);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.campo-checkbox input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--roxo-600);
+}
+
+.config-pagina .form-dica {
+    margin-bottom: 0;
+}
+
+.config-pagina fieldset .form-dica {
+    margin-bottom: 16px;
+}
+
+.config-titulo {
+    margin-bottom: 18px;
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: var(--roxo-700);
+}
+
+.config-conta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+}
+
+.config-dados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 40px;
+    margin: 0;
+}
+
+.config-dados dt {
+    color: var(--texto-3);
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.config-dados dd {
+    margin: 2px 0 0;
+    font-weight: 600;
+}
+
+.zona-perigo {
+    align-self: stretch;
+    padding: 18px;
+    border: 1px solid #fecaca;
+    border-radius: var(--raio-sm);
+    background: #fff8f8;
+}
+
+.zona-perigo h4 {
+    color: var(--vermelho);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.zona-perigo > p {
+    margin: 4px 0 14px;
+    color: var(--texto-3);
+    font-size: 0.9rem;
+}
+
+.zona-perigo .formulario {
+    gap: 12px;
+}
+
+.btn-perigo {
+    background: var(--vermelho);
+    color: #fff;
+}
+
+.btn-perigo:hover {
+    background: #b91c1c;
 }
 
 /* =================== Telas menores =================== */
@@ -2580,4 +2783,164 @@ svg.mapa {
         left: 16px;
         right: 16px;
     }
+}
+
+/* Dashboard de relatórios: mesma composição visual da referência, com os dados atuais. */
+.relatorio-topo {
+    align-items: center;
+    padding: 8px 2px 18px;
+}
+
+.relatorio-topo .secao-cabecalho h2 {
+    font-size: clamp(1.65rem, 2.2vw, 2.2rem);
+    letter-spacing: -0.035em;
+}
+
+.relatorio-topo .secao-cabecalho p {
+    margin-top: 4px;
+}
+
+.relatorio-filtros {
+    padding: 8px 12px;
+    border: 1px solid rgba(91, 33, 182, .08);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .78);
+    box-shadow: 0 8px 24px rgba(67, 42, 110, .06);
+}
+
+.kpis {
+    gap: 14px;
+    margin-top: 8px;
+}
+
+.kpi,
+.relatorio-card {
+    border-color: rgba(104, 78, 150, .1);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .94);
+    box-shadow: 0 8px 24px rgba(83, 58, 134, .07);
+}
+
+.kpi {
+    padding: 18px 20px;
+}
+
+.relatorio-grade {
+    grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.relatorio-evolucao {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.relatorio-funil {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.relatorio-mapa {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+}
+
+.relatorio-card:nth-child(4) {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.relatorio-card:nth-child(5) {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+.relatorio-card {
+    padding: 20px;
+}
+
+.relatorio-card-topo {
+    margin-bottom: 18px;
+}
+
+.relatorio-card-topo h3 {
+    font-size: 1.08rem;
+    letter-spacing: -.02em;
+}
+
+.colunas-barras {
+    background-image: linear-gradient(rgba(110, 87, 158, .1) 1px, transparent 1px);
+}
+
+.coluna-barra {
+    border-radius: 7px 7px 2px 2px;
+    background: linear-gradient(180deg, #8b5cf6 0%, #642bd4 100%);
+    box-shadow: 0 5px 12px rgba(109, 40, 217, .16);
+}
+
+.coluna:hover .coluna-barra {
+    background: linear-gradient(180deg, #a276ff 0%, #6d28d9 100%);
+}
+
+.funil a {
+    grid-template-columns: minmax(95px, auto) minmax(70px, 1fr) auto;
+    align-items: center;
+    padding: 10px 8px;
+    border-radius: 12px;
+}
+
+.funil-trilho {
+    grid-column: 2;
+    grid-row: 1;
+    height: 11px;
+    background: #ebe7f4;
+}
+
+.funil-valor {
+    grid-column: 3;
+    grid-row: 1;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #f3effa;
+    font-size: .85rem;
+}
+
+.funil-valor small { display: none; }
+
+.mapa-estados path {
+    fill: #6152d8;
+    stroke: rgba(255, 255, 255, .95);
+    stroke-width: 1.4;
+}
+
+.mapa-estados path:hover { fill: #503fca; }
+
+.mapa-ponto {
+    stroke: #c52ce8;
+    stroke-width: 4;
+}
+
+.barra-trilho { background: #ebe7f4; }
+
+@media (max-width: 1200px) {
+    .relatorio-grade {
+        grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+    .relatorio-grade { grid-template-columns: minmax(0, 1fr); }
+    .relatorio-evolucao,
+    .relatorio-funil,
+    .relatorio-mapa,
+    .relatorio-card:nth-child(4),
+    .relatorio-card:nth-child(5) {
+        grid-column: 1;
+        grid-row: auto;
+    }
+    .relatorio-topo { align-items: stretch; }
+    .relatorio-filtros { width: 100%; }
+    .funil a { grid-template-columns: minmax(95px, auto) minmax(60px, 1fr) auto; }
 }

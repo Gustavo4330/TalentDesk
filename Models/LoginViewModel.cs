@@ -4,6 +4,7 @@ namespace TalentDesk.Models
 {
     public class LoginViewModel
     {
+        [Required(ErrorMessage = "Informe seu nome.")]
         [Display(Name = "Nome")]
         public string Nome { get; set; } = string.Empty;
 

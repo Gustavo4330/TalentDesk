@@ -14,10 +14,11 @@ namespace TalentDesk.Controllers
             _usuarioRepository = new UsuarioRepository();
         }
 
+        // O formulário de criar conta fica na tela estilizada /Curriculo/Login
         [HttpGet]
         public IActionResult Cadastro()
         {
-            return View();
+            return RedirectToAction("Login", "Curriculo");
         }
 
         // ============ ENTRAR / SAIR ============
@@ -49,7 +50,7 @@ namespace TalentDesk.Controllers
             }
 
             string perfil = _usuarioRepository.ObterPerfil(usuario.Id);
-            SessaoUsuario.Entrar(HttpContext.Session, usuario.Id, usuario.Nome, perfil);
+            SessaoUsuario.Entrar(HttpContext.Session, usuario.Id, usuario.Nome, perfil, usuario.FotoUrl);
 
             TempData["Mensagem"] = $"Bem-vindo(a), {usuario.Nome}!";
 
@@ -82,6 +83,11 @@ namespace TalentDesk.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(LoginViewModel model)
         {
+            if (model.DataNascimento?.Date > DateTime.Today)
+            {
+                ModelState.AddModelError(nameof(model.DataNascimento), "A data de nascimento não pode ser futura.");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View("~/Views/Curriculo/Login.cshtml", model);
@@ -92,13 +98,19 @@ namespace TalentDesk.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Cadastro(Usuario usuario)
         {
             Console.WriteLine("====== CADASTRO FOI CHAMADO ======");
 
+            if (usuario.DataNascimento?.Date > DateTime.Today)
+            {
+                ModelState.AddModelError(nameof(usuario.DataNascimento), "A data de nascimento não pode ser futura.");
+            }
+
             if (!ModelState.IsValid)
             {
-                return View(usuario);
+                return TelaDeCadastro(usuario);
             }
 
             try
@@ -111,7 +123,7 @@ namespace TalentDesk.Controllers
                         "Este email já está cadastrado."
                     );
 
-                    return View(usuario);
+                    return TelaDeCadastro(usuario);
                 }
 
                 Console.WriteLine("====== VOU CADASTRAR NO BANCO ======");
@@ -126,6 +138,12 @@ namespace TalentDesk.Controllers
                 TempData["MensagemSucesso"] = "Cadastro realizado com sucesso. Faça login para continuar.";
                 return RedirectToAction(nameof(Entrar));
             }
+            catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 19)
+            {
+                // Dois envios ao mesmo tempo (ex.: clique duplo): o banco barra o e-mail repetido
+                ModelState.AddModelError("Email", "Este email já está cadastrado.");
+                return TelaDeCadastro(usuario);
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(
@@ -137,8 +155,23 @@ namespace TalentDesk.Controllers
                     "Ocorreu um erro ao realizar o cadastro. Tente novamente."
                 );
 
-                return View(usuario);
+                return TelaDeCadastro(usuario);
             }
+        }
+
+        // Volta para a tela estilizada de criar conta mostrando os erros.
+        // Os nomes dos campos são os mesmos, então as mensagens aparecem em cada campo.
+        private IActionResult TelaDeCadastro(Usuario usuario)
+        {
+            var model = new LoginViewModel
+            {
+                Nome = usuario.Nome,
+                Email = usuario.Email,
+                Whatsapp = usuario.Whatsapp,
+                DataNascimento = usuario.DataNascimento
+            };
+
+            return View("~/Views/Curriculo/Login.cshtml", model);
         }
     }
 }

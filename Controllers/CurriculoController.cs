@@ -231,7 +231,7 @@ namespace TalentDesk.Controllers
                 return View(model);
             }
 
-            SessaoUsuario.Entrar(HttpContext.Session, usuario.Id, usuario.Nome, _usuarioRepository.ObterPerfil(usuario.Id));
+            SessaoUsuario.Entrar(HttpContext.Session, usuario.Id, usuario.Nome, _usuarioRepository.ObterPerfil(usuario.Id), usuario.FotoUrl);
 
             TempData["Mensagem"] = $"Bem-vindo(a), {usuario.Nome}!";
             return RedirectToAction(nameof(Index));
