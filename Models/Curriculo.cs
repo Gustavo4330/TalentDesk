@@ -32,6 +32,9 @@ namespace TalentDesk.Models
         public string Status { get; set; } = StatusCurriculo.Novo;
         public DateTime DataCadastro { get; set; } = DateTime.Now;
 
+        // Conta do candidato dono do currículo (null nos currículos de exemplo)
+        public int? UsuarioId { get; set; }
+
         public List<ExperienciaProfissional> Experiencias { get; set; } = new();
         public List<string> Habilidades { get; set; } = new();
 

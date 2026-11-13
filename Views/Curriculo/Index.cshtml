@@ -241,7 +241,7 @@
                                         }
                                         else
                                         {
-                                            <a class="link" asp-action="Cadastrar">Cadastrar o primeiro currículo</a>
+                                            <span>Os currículos aparecem aqui quando os candidatos se cadastram.</span>
                                         }
                                     }
                                 </td>
@@ -302,8 +302,6 @@
                                                     <input type="hidden" name="returnUrl" value="@paginaAtual" />
                                                     <button type="submit" class="menu-item">@(ehFavorito ? "Remover dos favoritos" : "Adicionar aos favoritos")</button>
                                                 </form>
-                                                <a class="menu-item" asp-action="Editar" asp-route-id="@curriculo.Id">Editar currículo</a>
-
                                                 <span class="menu-separador">Mudar status</span>
                                                 <form method="post" asp-action="AlterarStatus" asp-route-id="@curriculo.Id">
                                                     <input type="hidden" name="returnUrl" value="@paginaAtual" />
@@ -314,12 +312,6 @@
                                                             @status
                                                         </button>
                                                     }
-                                                </form>
-
-                                                <span class="menu-separador"></span>
-                                                <form method="post" asp-action="Excluir" asp-route-id="@curriculo.Id" data-confirmar="Excluir o currículo de @curriculo.Nome? Essa ação não pode ser desfeita.">
-                                                    <input type="hidden" name="returnUrl" value="@Url.Action("Index", filtro.ParaRota())" />
-                                                    <button type="submit" class="menu-item perigo">Excluir currículo</button>
                                                 </form>
                                             </div>
                                         </details>
@@ -450,10 +442,25 @@
                         @(selecionadoFavorito ? "Favoritado" : "Favoritar")
                     </button>
                 </form>
-                <a class="btn btn-primary btn-sm" asp-action="Editar" asp-route-id="@selecionado.Id">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.8 9.94l-3.75-3.75L3 17.25Zm17.7-10.2a1 1 0 0 0 0-1.42l-2.33-2.33a1 1 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"/></svg>
-                    Editar perfil
-                </a>
+                @* A empresa não edita o perfil do candidato: só muda o status *@
+                <details class="menu-acoes">
+                    <summary class="btn btn-primary btn-sm">
+                        <span class="status-ponto @TalentDesk.Models.StatusCurriculo.ClasseCss(selecionado.Status)"></span>
+                        Mudar status
+                    </summary>
+                    <div class="dropdown menu-acoes-lista">
+                        <form method="post" asp-action="AlterarStatus" asp-route-id="@selecionado.Id">
+                            <input type="hidden" name="returnUrl" value="@paginaAtual" />
+                            @foreach (var status in TalentDesk.Models.StatusCurriculo.Todos)
+                            {
+                                <button type="submit" name="status" value="@status" class="menu-item @(status == selecionado.Status ? "atual" : "")" disabled="@(status == selecionado.Status)">
+                                    <span class="status-ponto @TalentDesk.Models.StatusCurriculo.ClasseCss(status)"></span>
+                                    @status
+                                </button>
+                            }
+                        </form>
+                    </div>
+                </details>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(selecionado.Resumo))

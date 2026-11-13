@@ -19,7 +19,7 @@
         </div>
 
         <h1>Entrar</h1>
-        <p class="entrar-subtitulo">Acesse sua conta para gerenciar os currículos.</p>
+        <p class="entrar-subtitulo">Acesse sua conta do Talent Desk.</p>
 
         @if (TempData["MensagemSucesso"] is string sucesso)
         {
@@ -45,9 +45,7 @@
         </form>
 
         <p class="entrar-rodape">
-            Ainda não tem conta? <a asp-controller="Curriculo" asp-action="Login">Criar conta</a>
-            <br />
-            <a asp-controller="Curriculo" asp-action="Index">Voltar para a tela inicial</a>
+            Candidato e ainda não tem conta? <a asp-controller="Curriculo" asp-action="Login">Criar conta</a>
         </p>
     </div>
 </div>

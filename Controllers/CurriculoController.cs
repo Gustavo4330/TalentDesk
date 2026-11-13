@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TalentDesk.Filters;
 using TalentDesk.Models;
 using TalentDesk.Repositories;
 using TalentDesk.Services;
@@ -18,9 +19,10 @@ namespace TalentDesk.Controllers
             _favoritoService = new FavoritoService();
         }
 
-        // ============ DASHBOARD / LISTA / FAVORITOS ============
+        // ============ DASHBOARD / LISTA / FAVORITOS (empresa) ============
 
         [HttpGet]
+        [Acesso(NivelAcesso.Empresa)]
         public IActionResult Index([FromQuery] FiltroCurriculo filtro)
         {
             // Valores inválidos na URL (ex.: ?pagina=abc) são ignorados
@@ -64,12 +66,37 @@ namespace TalentDesk.Controllers
             return View(viewModel);
         }
 
-        // ============ CADASTRO E EDIÇÃO ============
+        // ============ CURRÍCULO DO CANDIDATO ============
+        // Só o candidato cadastra e edita o próprio currículo.
+        // A empresa (administrador/recrutador) apenas lê e muda o status.
+
+        // Atalho do menu: abre o currículo do candidato logado (ou o cadastro, se ainda não tem)
+        [HttpGet]
+        [Acesso(NivelAcesso.Candidato)]
+        public IActionResult MeuCurriculo()
+        {
+            int? id = _curriculoRepository.ObterIdPorUsuario(UsuarioLogadoId);
+            return id.HasValue
+                ? RedirectToAction(nameof(Editar), new { id = id.Value })
+                : RedirectToAction(nameof(Cadastrar));
+        }
 
         [HttpGet]
+        [Acesso(NivelAcesso.Candidato)]
         public IActionResult Cadastrar()
         {
-            var form = new CurriculoFormViewModel();
+            if (_curriculoRepository.ObterIdPorUsuario(UsuarioLogadoId).HasValue)
+            {
+                return RedirectToAction(nameof(MeuCurriculo));
+            }
+
+            // Já começa com o nome e o e-mail da conta
+            var usuario = _usuarioRepository.ObterPorId(UsuarioLogadoId);
+            var form = new CurriculoFormViewModel
+            {
+                Nome = usuario?.Nome ?? string.Empty,
+                Email = usuario?.Email ?? string.Empty
+            };
             form.CompletarExperiencias();
             PreencherSugestoes(form);
             return View("Formulario", form);
@@ -77,8 +104,14 @@ namespace TalentDesk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Acesso(NivelAcesso.Candidato)]
         public IActionResult Cadastrar(CurriculoFormViewModel form)
         {
+            if (_curriculoRepository.ObterIdPorUsuario(UsuarioLogadoId).HasValue)
+            {
+                return RedirectToAction(nameof(MeuCurriculo));
+            }
+
             form.Id = null;
 
             if (!ModelState.IsValid)
@@ -91,20 +124,27 @@ namespace TalentDesk.Controllers
             var curriculo = form.ParaCurriculo();
             curriculo.DataCadastro = DateTime.Now;
             curriculo.FotoUrl = string.Empty;
+            curriculo.UsuarioId = UsuarioLogadoId;
+            curriculo.Status = StatusCurriculo.Novo; // o status é definido pela empresa
 
-            int id = _curriculoRepository.Inserir(curriculo);
+            _curriculoRepository.Inserir(curriculo);
 
-            TempData["Mensagem"] = $"Currículo de {curriculo.Nome} cadastrado com sucesso.";
-            return RedirectToAction(nameof(Index), new { selecionado = id });
+            TempData["Mensagem"] = "Seu currículo foi cadastrado.";
+            return RedirectToAction(nameof(MeuCurriculo));
         }
 
         [HttpGet]
+        [Acesso(NivelAcesso.Candidato)]
         public IActionResult Editar(int id)
         {
             var curriculo = _curriculoRepository.ObterPorId(id);
             if (curriculo == null)
             {
                 return NotFound();
+            }
+            if (curriculo.UsuarioId != UsuarioLogadoId)
+            {
+                return AcessoNegado();
             }
 
             var form = CurriculoFormViewModel.DeCurriculo(curriculo);
@@ -114,6 +154,7 @@ namespace TalentDesk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Acesso(NivelAcesso.Candidato)]
         public IActionResult Editar(int id, CurriculoFormViewModel form)
         {
             var existente = _curriculoRepository.ObterPorId(id);
@@ -121,12 +162,17 @@ namespace TalentDesk.Controllers
             {
                 return NotFound();
             }
+            if (existente.UsuarioId != UsuarioLogadoId)
+            {
+                return AcessoNegado();
+            }
 
             form.Id = id;
 
             if (!ModelState.IsValid)
             {
                 form.FotoUrl = existente.FotoUrl;
+                form.Status = existente.Status;
                 form.CompletarExperiencias();
                 PreencherSugestoes(form);
                 return View("Formulario", form);
@@ -135,32 +181,19 @@ namespace TalentDesk.Controllers
             var curriculo = form.ParaCurriculo();
             curriculo.Id = id;
             curriculo.FotoUrl = existente.FotoUrl; // mantém a foto que já existia
+            curriculo.Status = existente.Status;   // o candidato não muda o próprio status
 
             _curriculoRepository.Atualizar(curriculo);
 
-            TempData["Mensagem"] = $"Currículo de {curriculo.Nome} atualizado.";
-            return RedirectToAction(nameof(Index), new { selecionado = id });
+            TempData["Mensagem"] = "Seu currículo foi atualizado.";
+            return RedirectToAction(nameof(MeuCurriculo));
         }
+
+        // ============ AÇÕES RÁPIDAS (empresa) ============
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Excluir(int id, string? returnUrl)
-        {
-            var curriculo = _curriculoRepository.ObterPorId(id);
-
-            if (curriculo != null && _curriculoRepository.Excluir(id))
-            {
-                _favoritoService.RemoverFavorito(Request, Response, id);
-                TempData["Mensagem"] = $"Currículo de {curriculo.Nome} excluído.";
-            }
-
-            return VoltarPara(returnUrl);
-        }
-
-        // ============ AÇÕES RÁPIDAS ============
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [Acesso(NivelAcesso.Empresa)]
         public IActionResult AlterarStatus(int id, string status, string? returnUrl)
         {
             if (_curriculoRepository.AlterarStatus(id, status))
@@ -173,6 +206,7 @@ namespace TalentDesk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Acesso(NivelAcesso.Empresa)]
         public IActionResult AlternarFavorito(int id, string? returnUrl)
         {
             if (_curriculoRepository.Existe(id))
@@ -186,6 +220,7 @@ namespace TalentDesk.Controllers
 
         // Endereço antigo de detalhes: abre o currículo no painel do dashboard
         [HttpGet]
+        [Acesso(NivelAcesso.Empresa)]
         public IActionResult Detalhes(int id)
         {
             return RedirectToAction(nameof(Index), new { selecionado = id });
@@ -193,7 +228,9 @@ namespace TalentDesk.Controllers
 
         // ============ TELAS JÁ EXISTENTES ============
 
+        // Diagnóstico do banco: mostra mensagens de erro internas, então fica só para a equipe
         [HttpGet]
+        [Acesso(NivelAcesso.Superadmin)]
         public IActionResult TestDb()
         {
             try
@@ -209,6 +246,7 @@ namespace TalentDesk.Controllers
         }
 
         [HttpGet]
+        [Publico]
         public IActionResult Login()
         {
             return View(new LoginViewModel());
@@ -216,6 +254,7 @@ namespace TalentDesk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Publico]
         public IActionResult Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
@@ -223,21 +262,27 @@ namespace TalentDesk.Controllers
                 return View(model);
             }
 
-            var usuario = _usuarioRepository.ObterPorEmail(model.Email);
-
-            if (usuario == null || !BCrypt.Net.BCrypt.Verify(model.Senha, usuario.Senha))
+            var usuario = new AutenticacaoService().Entrar(HttpContext.Session, model.Email, model.Senha);
+            if (usuario == null)
             {
                 ModelState.AddModelError(string.Empty, "E-mail ou senha inválidos.");
                 return View(model);
             }
-
-            SessaoUsuario.Entrar(HttpContext.Session, usuario.Id, usuario.Nome, _usuarioRepository.ObterPerfil(usuario.Id), usuario.FotoUrl);
 
             TempData["Mensagem"] = $"Bem-vindo(a), {usuario.Nome}!";
             return RedirectToAction(nameof(Index));
         }
 
         // ============ AUXILIARES ============
+
+        // As ações que usam isto só rodam com login (garantido pelo ControleAcessoFilter)
+        private int UsuarioLogadoId => SessaoUsuario.Id(HttpContext.Session)!.Value;
+
+        private IActionResult AcessoNegado()
+        {
+            Response.StatusCode = StatusCodes.Status403Forbidden;
+            return View("AcessoNegado");
+        }
 
         private IActionResult VoltarPara(string? returnUrl)
         {

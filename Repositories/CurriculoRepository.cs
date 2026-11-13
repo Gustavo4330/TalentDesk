@@ -15,7 +15,7 @@ namespace TalentDesk.Repositories
         private const string ColunasCurriculo = @"
             c.id, c.nome, c.cargo, c.area, c.formacao, c.formacao_detalhada, c.instituicao,
             c.conclusao_formacao, c.idade, c.anos_experiencia, c.foto_url, c.email, c.telefone,
-            c.cidade, c.linkedin, c.resumo, c.status, c.data_cadastro";
+            c.cidade, c.linkedin, c.resumo, c.status, c.data_cadastro, c.usuario_id";
 
         private readonly bool _verificarBanco;
 
@@ -363,6 +363,21 @@ namespace TalentDesk.Repositories
             return itens;
         }
 
+        // Habilidades de todos os currículos (id do currículo + nome), para o dashboard
+        public List<(int CurriculoId, string Nome)> ListarHabilidades()
+        {
+            using var conexao = AbrirConexao();
+            using var comando = new SqliteCommand("SELECT curriculo_id, nome FROM curriculo_habilidades;", conexao);
+
+            var itens = new List<(int, string)>();
+            using var leitor = comando.ExecuteReader();
+            while (leitor.Read())
+            {
+                itens.Add((leitor.GetInt32(0), leitor.GetString(1)));
+            }
+            return itens;
+        }
+
         // ================= GRAVAÇÃO =================
 
         public int Inserir(Curriculo curriculo)
@@ -376,15 +391,16 @@ namespace TalentDesk.Repositories
                     INSERT INTO curriculos
                         (nome, cargo, area, formacao, formacao_detalhada, instituicao, conclusao_formacao,
                          idade, anos_experiencia, foto_url, email, telefone, cidade, linkedin, resumo,
-                         status, data_cadastro)
+                         status, data_cadastro, usuario_id)
                     VALUES
                         (@nome, @cargo, @area, @formacao, @formacao_detalhada, @instituicao, @conclusao_formacao,
                          @idade, @anos_experiencia, @foto_url, @email, @telefone, @cidade, @linkedin, @resumo,
-                         @status, @data_cadastro);
+                         @status, @data_cadastro, @usuario_id);
                     SELECT last_insert_rowid();", conexao, transacao);
 
                 AdicionarParametros(comando, curriculo);
                 comando.Parameters.AddWithValue("@data_cadastro", BancoDeDados.FormatarDataHora(curriculo.DataCadastro));
+                comando.Parameters.AddWithValue("@usuario_id", (object?)curriculo.UsuarioId ?? DBNull.Value);
 
                 // last_insert_rowid() devolve long; o id cabe em int
                 int id = Convert.ToInt32(comando.ExecuteScalar());
@@ -448,6 +464,17 @@ namespace TalentDesk.Repositories
                 transacao.Rollback();
                 throw;
             }
+        }
+
+        // Id do currículo do candidato (null se ele ainda não cadastrou)
+        public int? ObterIdPorUsuario(int usuarioId)
+        {
+            using var conexao = AbrirConexao();
+
+            using var comando = new SqliteCommand("SELECT id FROM curriculos WHERE usuario_id = @usuario_id;", conexao);
+            comando.Parameters.AddWithValue("@usuario_id", usuarioId);
+
+            return comando.ExecuteScalar() is long id ? (int)id : null;
         }
 
         public bool AlterarStatus(int id, string status)
@@ -548,7 +575,8 @@ namespace TalentDesk.Repositories
                 Resumo = TextoOuVazio(leitor, "resumo"),
                 Status = leitor.GetString("status"),
                 // A data vem como texto; se estiver inválida, usa a data mínima em vez de dar erro
-                DataCadastro = BancoDeDados.LerData(leitor["data_cadastro"]) ?? DateTime.MinValue
+                DataCadastro = BancoDeDados.LerData(leitor["data_cadastro"]) ?? DateTime.MinValue,
+                UsuarioId = leitor["usuario_id"] is long usuarioId ? (int)usuarioId : null
             };
         }
 

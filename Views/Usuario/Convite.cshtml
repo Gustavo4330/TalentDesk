@@ -1,0 +1,55 @@
+@model TalentDesk.Models.ConviteCadastroViewModel
+@{
+    ViewData["Title"] = "Criar conta de administrador";
+    string? token = ViewData["Token"] as string;
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+}
+
+<div class="entrar-pagina">
+    <div class="entrar-card">
+        <div class="entrar-marca">
+            <span class="brand-icon">
+                <img class="brand-logo" src="~/images/logo-talentdesk.jpeg" asp-append-version="true" alt="" />
+            </span>
+            <strong>Talent Desk</strong>
+        </div>
+
+        <h1>Bem-vindo(a)!</h1>
+        <p class="entrar-subtitulo">Você foi convidado(a) para administrar sua empresa no Talent Desk. Crie sua senha para começar.</p>
+
+        <form method="post" asp-action="Convite" asp-route-token="@token" class="formulario">
+            <div asp-validation-summary="ModelOnly" class="alerta-erro"></div>
+
+            <label class="campo">
+                <span>E-mail</span>
+                <input value="@Model.Email" type="email" readonly aria-readonly="true" autocomplete="username" />
+            </label>
+
+            <label class="campo">
+                <span>Nome completo</span>
+                <input asp-for="Nome" placeholder="Seu nome" autocomplete="name" autofocus />
+                <span asp-validation-for="Nome" class="erro"></span>
+            </label>
+
+            <label class="campo">
+                <span>Senha</span>
+                <input asp-for="Senha" placeholder="Pelo menos 8 caracteres" autocomplete="new-password" />
+                <span asp-validation-for="Senha" class="erro"></span>
+            </label>
+
+            <label class="campo">
+                <span>Confirmar senha</span>
+                <input asp-for="ConfirmarSenha" placeholder="Repita a senha" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmarSenha" class="erro"></span>
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-bloco">Criar conta</button>
+        </form>
+
+        <p class="entrar-rodape">O link é de uso único e vale por 7 dias.</p>
+    </div>
+</div>

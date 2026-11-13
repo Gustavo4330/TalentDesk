@@ -98,8 +98,32 @@ namespace TalentDesk.Repositories
             INSERT OR IGNORE INTO perfis (id, nome) VALUES
                 (1, 'Candidato'),
                 (2, 'Recrutador'),
-                (3, 'Administrador');
+                (3, 'Administrador'),
+                (4, 'Superadmin');
+
+            -- Convites de administrador: só o hash do token fica no banco
+            CREATE TABLE IF NOT EXISTS convites (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT NOT NULL COLLATE NOCASE,
+                token_hash TEXT NOT NULL UNIQUE,
+                criado_por INTEGER NULL REFERENCES usuarios (id) ON DELETE SET NULL,
+                criado_em TEXT NOT NULL,
+                expira_em TEXT NOT NULL,
+                usado_em TEXT NULL,
+                usado_por INTEGER NULL REFERENCES usuarios (id) ON DELETE SET NULL
+            );
         ";
+
+        // Liga cada currículo à conta do candidato dono dele (bancos antigos não têm a coluna).
+        // Excluir a conta apaga o currículo junto (ON DELETE CASCADE).
+        private const string SqlVinculoCurriculoUsuario = @"
+            ALTER TABLE curriculos ADD COLUMN usuario_id INTEGER NULL
+                REFERENCES usuarios (id) ON DELETE CASCADE;";
+
+        // Um candidato tem no máximo um currículo
+        private const string SqlIndiceCurriculoUsuario = @"
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_curriculos_usuario
+                ON curriculos (usuario_id) WHERE usuario_id IS NOT NULL;";
 
         // Chamado no início do programa. Se der algum problema, só avisa no
         // console: a próxima tela que usar o banco tenta de novo.
@@ -133,6 +157,21 @@ namespace TalentDesk.Repositories
                 using (var comando = new SqliteCommand(SqlCriarTabelas, conexao))
                 {
                     comando.ExecuteNonQuery();
+                }
+
+                using (var existe = new SqliteCommand(
+                    "SELECT COUNT(*) FROM pragma_table_info('curriculos') WHERE name = 'usuario_id';", conexao))
+                {
+                    if (Convert.ToInt64(existe.ExecuteScalar()) == 0)
+                    {
+                        using var alterar = new SqliteCommand(SqlVinculoCurriculoUsuario, conexao);
+                        alterar.ExecuteNonQuery();
+                    }
+                }
+
+                using (var indice = new SqliteCommand(SqlIndiceCurriculoUsuario, conexao))
+                {
+                    indice.ExecuteNonQuery();
                 }
 
                 using (var contar = new SqliteCommand("SELECT COUNT(*) FROM curriculos;", conexao))

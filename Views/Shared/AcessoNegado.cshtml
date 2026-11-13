@@ -1,0 +1,13 @@
+@{
+    Layout = "_AppLayout";
+    ViewData["Title"] = "Acesso negado";
+}
+
+<section class="em-breve">
+    <span class="card-icone roxo">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3Zm0 5a2.5 2.5 0 0 1 1 4.8V15h-2v-3.2A2.5 2.5 0 0 1 12 7Z"/></svg>
+    </span>
+    <h2>Você não tem acesso a esta página</h2>
+    <p>Seu perfil não permite esta ação. Se achar que isso é um engano, fale com o administrador da sua empresa.</p>
+    <a class="btn btn-primary" asp-controller="Usuario" asp-action="Entrar">Voltar para o início</a>
+</section>

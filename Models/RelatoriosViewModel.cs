@@ -48,6 +48,9 @@ namespace TalentDesk.Models
         public List<ItemContagem> PorArea { get; set; } = new();
         public List<ItemContagem> PorFormacao { get; set; } = new();
 
+        // Quantidade = currículos que têm a habilidade (um currículo conta em várias)
+        public List<ItemContagem> PorHabilidade { get; set; } = new();
+
         // ===== Mapa =====
         public List<PontoMapa> Pontos { get; set; } = new();
         public List<ItemContagem> PorRegiao { get; set; } = new();

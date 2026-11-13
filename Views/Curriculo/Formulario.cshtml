@@ -1,18 +1,17 @@
 @model TalentDesk.Models.CurriculoFormViewModel
 @{
     Layout = "_AppLayout";
-    ViewData["Title"] = Model.EhEdicao ? "Editar currículo" : "Cadastrar currículo";
-    ViewData["Menu"] = "curriculos";
+    // Formulário do candidato: só ele cadastra e edita o próprio currículo
+    ViewData["Title"] = Model.EhEdicao ? "Meu currículo" : "Cadastrar meu currículo";
+    ViewData["Menu"] = "meu-curriculo";
 }
 
 <section class="formulario-pagina">
     <header class="secao-cabecalho">
-        <a class="link-voltar" asp-action="Index" asp-route-selecionado="@Model.Id">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.7 6.7-1.4-1.4L6.6 12l6.7 6.7 1.4-1.4L9.4 12l5.3-5.3Z"/></svg>
-            Voltar
-        </a>
         <h2>@ViewData["Title"]</h2>
-        <p>@(Model.EhEdicao ? "Atualize as informações do candidato." : "Preencha os dados do candidato. Campos com * são obrigatórios.")</p>
+        <p>@(Model.EhEdicao
+                ? "Mantenha suas informações atualizadas para as empresas que avaliam seu perfil."
+                : "Preencha seus dados para as empresas conhecerem seu perfil. Campos com * são obrigatórios.")</p>
     </header>
 
     <form method="post"
@@ -79,18 +78,17 @@
                     <input asp-for="AnosExperiencia" type="number" min="0" max="60" />
                     <span asp-validation-for="AnosExperiencia" class="erro"></span>
                 </label>
-                <label class="campo">
-                    <span>Status</span>
-                    <select asp-for="Status">
-                        @foreach (var status in TalentDesk.Models.StatusCurriculo.Todos)
-                        {
-                            <option value="@status">@status</option>
-                        }
-                    </select>
-                </label>
+                @if (Model.EhEdicao)
+                {
+                    @* O status é definido pela empresa; o candidato só acompanha *@
+                    <div class="campo">
+                        <span>Status no processo seletivo</span>
+                        <span class="status @TalentDesk.Models.StatusCurriculo.ClasseCss(Model.Status)">@Model.Status</span>
+                    </div>
+                }
                 <label class="campo campo-inteiro">
                     <span>Resumo profissional</span>
-                    <textarea asp-for="Resumo" rows="4" placeholder="Conte um pouco sobre a trajetória e os objetivos do candidato."></textarea>
+                    <textarea asp-for="Resumo" rows="4" placeholder="Conte um pouco sobre a trajetória e seus objetivos profissionais."></textarea>
                     <span asp-validation-for="Resumo" class="erro"></span>
                 </label>
                 <label class="campo campo-inteiro">
@@ -160,9 +158,12 @@
         </fieldset>
 
         <div class="formulario-acoes">
-            <a class="btn btn-outline" asp-action="Index" asp-route-selecionado="@Model.Id">Cancelar</a>
+            @if (Model.EhEdicao)
+            {
+                <a class="btn btn-outline" asp-action="MeuCurriculo">Descartar alterações</a>
+            }
             <button type="submit" class="btn btn-primary">
-                @(Model.EhEdicao ? "Salvar alterações" : "Cadastrar currículo")
+                @(Model.EhEdicao ? "Salvar alterações" : "Cadastrar meu currículo")
             </button>
         </div>
 

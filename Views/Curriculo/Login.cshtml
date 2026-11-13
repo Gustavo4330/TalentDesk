@@ -1,4 +1,4 @@
-@model TalentDesk.Models.LoginViewModel
+﻿@model TalentDesk.Models.LoginViewModel
 @{
     ViewData["Title"] = "Login e cadastro";
 }
@@ -27,7 +27,7 @@
         body {
             margin: 0;
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(ellipse at 80% 0%, rgba(224, 186, 255, .3), transparent 34%), linear-gradient(135deg, #f5f2fc 0%, #fbfaff 100%);
+            background: radial-gradient(900px 520px at 85% -8%, rgba(236, 160, 230, 0.45), transparent 60%), radial-gradient(700px 480px at 20% 110%, rgba(196, 170, 255, 0.4), transparent 60%), #f6f1fc;
             color: var(--text);
         }
 
@@ -364,7 +364,7 @@
             </form>
 
             <div class="secondary-link">
-                <a asp-controller="Curriculo" asp-action="Index">Voltar para a página inicial</a>
+                Já tem conta? <a asp-controller="Usuario" asp-action="Entrar">Entrar</a>
             </div>
 
             @if (TempData["MensagemSucesso"] != null)

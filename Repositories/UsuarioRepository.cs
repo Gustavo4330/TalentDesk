@@ -186,150 +186,97 @@ namespace TalentDesk.Repositories
             return comando.ExecuteNonQuery() > 0;
         }
 
-        public int Cadastrar(Usuario usuario)
+        // Cadastro aberto do site: sempre cria conta de candidato
+        public int Cadastrar(Usuario usuario) => Cadastrar(usuario, Perfis.Candidato, conviteId: null);
+
+        // Conta de administrador criada pelo link de convite. Tudo na mesma transação:
+        // se o convite já foi usado ou expirou, nenhuma conta é criada.
+        public int CadastrarComConvite(Usuario usuario, int conviteId) =>
+            Cadastrar(usuario, Perfis.Administrador, conviteId);
+
+        private int Cadastrar(Usuario usuario, string perfil, int? conviteId)
         {
             using var conexao = AbrirConexao();
-
             using var transacao = conexao.BeginTransaction();
 
             try
             {
-                // Cria o hash da senha
-                string senhaHash =
-                    BCrypt.Net.BCrypt.HashPassword(usuario.Senha);
+                string agora = BancoDeDados.FormatarDataHora(DateTime.Now);
 
-                // Cadastra o usuário
-                string sqlUsuario = @"
-                    INSERT INTO usuarios
-                    (
-                        nome,
-                        email,
-                        senha_hash,
-                        whatsapp,
-                        data_nascimento,
-                        foto_url
-                    )
-                    VALUES
-                    (
-                        @nome,
-                        @email,
-                        @senha_hash,
-                        @whatsapp,
-                        @data_nascimento,
-                        @foto_url
-                    );
-
-                    SELECT last_insert_rowid();
-                ";
-
-                using var comandoUsuario =
-                    new SqliteCommand(sqlUsuario, conexao, transacao);
-
-                comandoUsuario.Parameters.AddWithValue(
-                    "@nome",
-                    usuario.Nome
-                );
-
-                comandoUsuario.Parameters.AddWithValue(
-                    "@email",
-                    usuario.Email
-                );
-
-                comandoUsuario.Parameters.AddWithValue(
-                    "@senha_hash",
-                    senhaHash
-                );
-
-                comandoUsuario.Parameters.AddWithValue(
-                    "@whatsapp",
-                    (object?)usuario.Whatsapp ?? DBNull.Value
-                );
-
-                // Data de nascimento gravada como texto (ex.: "1990-01-31")
-                comandoUsuario.Parameters.AddWithValue(
-                    "@data_nascimento",
-                    usuario.DataNascimento.HasValue
-                        ? (object)BancoDeDados.FormatarData(usuario.DataNascimento.Value)
-                        : DBNull.Value
-                );
-
-                comandoUsuario.Parameters.AddWithValue(
-                    "@foto_url",
-                    (object?)usuario.FotoUrl ?? DBNull.Value
-                );
-
-                // last_insert_rowid() devolve long; o id cabe em int
-                int usuarioId =
-                    Convert.ToInt32(comandoUsuario.ExecuteScalar());
-
-                // Busca o perfil Candidato
-                string sqlPerfil = @"
-                    SELECT id
-                    FROM perfis
-                    WHERE nome = 'Candidato';
-                ";
-
-                using var comandoPerfil =
-                    new SqliteCommand(sqlPerfil, conexao, transacao);
-
-                object? resultadoPerfil =
-                    comandoPerfil.ExecuteScalar();
-
-                if (resultadoPerfil == null)
+                // Marca o convite como usado antes de criar a conta (evita dois cadastros com o mesmo link)
+                if (conviteId.HasValue)
                 {
-                    throw new Exception(
-                        "O perfil Candidato não foi encontrado."
-                    );
+                    using var usarConvite = new SqliteCommand(@"
+                        UPDATE convites SET usado_em = @agora
+                        WHERE id = @id AND usado_em IS NULL AND expira_em > @agora;", conexao, transacao);
+                    usarConvite.Parameters.AddWithValue("@id", conviteId.Value);
+                    usarConvite.Parameters.AddWithValue("@agora", agora);
+
+                    if (usarConvite.ExecuteNonQuery() == 0)
+                    {
+                        throw new ConviteInvalidoException();
+                    }
                 }
 
-                int perfilId =
-                    Convert.ToInt32(resultadoPerfil);
+                using var comandoUsuario = new SqliteCommand(@"
+                    INSERT INTO usuarios (nome, email, senha_hash, whatsapp, data_nascimento, foto_url)
+                    VALUES (@nome, @email, @senha_hash, @whatsapp, @data_nascimento, @foto_url);
+                    SELECT last_insert_rowid();", conexao, transacao);
 
-                // Relaciona o usuário ao perfil
-                string sqlUsuarioPerfil = @"
-                    INSERT INTO usuario_perfil
-                    (
-                        usuario_id,
-                        perfil_id
-                    )
-                    VALUES
-                    (
-                        @usuario_id,
-                        @perfil_id
-                    );
-                ";
+                comandoUsuario.Parameters.AddWithValue("@nome", usuario.Nome);
+                comandoUsuario.Parameters.AddWithValue("@email", usuario.Email);
+                comandoUsuario.Parameters.AddWithValue("@senha_hash", BCrypt.Net.BCrypt.HashPassword(usuario.Senha));
+                comandoUsuario.Parameters.AddWithValue("@whatsapp", (object?)usuario.Whatsapp ?? DBNull.Value);
+                // Data de nascimento gravada como texto (ex.: "1990-01-31")
+                comandoUsuario.Parameters.AddWithValue("@data_nascimento",
+                    usuario.DataNascimento.HasValue
+                        ? BancoDeDados.FormatarData(usuario.DataNascimento.Value)
+                        : DBNull.Value);
+                comandoUsuario.Parameters.AddWithValue("@foto_url", (object?)usuario.FotoUrl ?? DBNull.Value);
 
-                using var comandoUsuarioPerfil =
-                    new SqliteCommand(
-                        sqlUsuarioPerfil,
-                        conexao,
-                        transacao
-                    );
+                // last_insert_rowid() devolve long; o id cabe em int
+                int usuarioId = Convert.ToInt32(comandoUsuario.ExecuteScalar());
 
-                comandoUsuarioPerfil.Parameters.AddWithValue(
-                    "@usuario_id",
-                    usuarioId
-                );
+                InserirPerfil(conexao, transacao, usuarioId, perfil);
 
-                comandoUsuarioPerfil.Parameters.AddWithValue(
-                    "@perfil_id",
-                    perfilId
-                );
+                if (conviteId.HasValue)
+                {
+                    using var registrar = new SqliteCommand(
+                        "UPDATE convites SET usado_por = @usuario_id WHERE id = @id;", conexao, transacao);
+                    registrar.Parameters.AddWithValue("@usuario_id", usuarioId);
+                    registrar.Parameters.AddWithValue("@id", conviteId.Value);
+                    registrar.ExecuteNonQuery();
+                }
 
-                comandoUsuarioPerfil.ExecuteNonQuery();
-
-                // Confirma todas as operações
                 transacao.Commit();
-
                 return usuarioId;
             }
             catch
             {
                 // Desfaz tudo caso alguma etapa dê erro
                 transacao.Rollback();
-
                 throw;
             }
         }
+
+        private static void InserirPerfil(SqliteConnection conexao, SqliteTransaction transacao, int usuarioId, string perfil)
+        {
+            using var comando = new SqliteCommand(@"
+                INSERT INTO usuario_perfil (usuario_id, perfil_id)
+                SELECT @usuario_id, id FROM perfis WHERE nome = @perfil;", conexao, transacao);
+            comando.Parameters.AddWithValue("@usuario_id", usuarioId);
+            comando.Parameters.AddWithValue("@perfil", perfil);
+
+            if (comando.ExecuteNonQuery() == 0)
+            {
+                throw new InvalidOperationException($"O perfil {perfil} não foi encontrado.");
+            }
+        }
+    }
+
+    // O convite já foi usado ou expirou
+    public class ConviteInvalidoException : Exception
+    {
+        public ConviteInvalidoException() : base("Este convite já foi usado ou expirou.") { }
     }
 }

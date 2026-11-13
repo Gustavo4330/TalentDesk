@@ -46,7 +46,8 @@ namespace TalentDesk.Services
                     .Select(status => new ItemContagem { Nome = status, Quantidade = curriculos.Count(c => c.Status == status) })
                     .ToList(),
                 PorArea = ContarPor(curriculos, c => c.Area),
-                PorFormacao = ContarPor(curriculos, c => c.Formacao)
+                PorFormacao = ContarPor(curriculos, c => c.Formacao, limite: 5),
+                PorHabilidade = ContarHabilidades(curriculos)
             };
 
             MontarEvolucao(viewModel, curriculos, filtro.Dias, agora);
@@ -72,6 +73,26 @@ namespace TalentDesk.Services
                 .Select(grupo => new ItemContagem { Nome = grupo.Key, Quantidade = grupo.Count() })
                 .OrderByDescending(item => item.Quantidade)
                 .ThenBy(item => item.Nome, StringComparer.Create(PtBr, true))
+                .Take(limite)
+                .ToList();
+        }
+
+        // Habilidades mais comuns entre os currículos do filtro (sem diferenciar maiúsculas)
+        private List<ItemContagem> ContarHabilidades(List<Curriculo> curriculos, int limite = 5)
+        {
+            var ids = curriculos.Select(c => c.Id).ToHashSet();
+            var comparador = StringComparer.Create(PtBr, true);
+
+            return _curriculoRepository.ListarHabilidades()
+                .Where(h => ids.Contains(h.CurriculoId) && !string.IsNullOrWhiteSpace(h.Nome))
+                .GroupBy(h => h.Nome.Trim(), comparador)
+                .Select(grupo => new ItemContagem
+                {
+                    Nome = grupo.Key,
+                    Quantidade = grupo.Select(h => h.CurriculoId).Distinct().Count()
+                })
+                .OrderByDescending(item => item.Quantidade)
+                .ThenBy(item => item.Nome, comparador)
                 .Take(limite)
                 .ToList();
         }

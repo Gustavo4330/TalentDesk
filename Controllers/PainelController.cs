@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TalentDesk.Filters;
 using TalentDesk.Models;
 using TalentDesk.Repositories;
 using TalentDesk.Services;
@@ -11,6 +12,7 @@ namespace TalentDesk.Controllers
         private readonly RelatorioService _relatorioService = new(new CurriculoRepository());
 
         [HttpGet]
+        [Acesso(NivelAcesso.Empresa)]
         public IActionResult Relatorios([FromQuery] FiltroRelatorio filtro)
         {
             return View(_relatorioService.Montar(filtro));
@@ -21,7 +23,10 @@ namespace TalentDesk.Controllers
         {
             ViewData["Menu"] = "vagas";
             ViewData["Title"] = "Vagas";
-            ViewData["Descricao"] = "Em breve você poderá cadastrar vagas e vincular currículos a cada processo seletivo.";
+            // Vagas valem para os dois lados: a empresa publica, o candidato consulta
+            ViewData["Descricao"] = Perfis.EhCandidato(SessaoUsuario.Perfil(HttpContext.Session))
+                ? "Em breve você verá aqui as vagas publicadas pelas empresas."
+                : "Em breve você poderá publicar vagas e vincular currículos a cada processo seletivo.";
             return View("EmBreve");
         }
 

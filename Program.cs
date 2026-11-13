@@ -1,8 +1,16 @@
+using TalentDesk.Filters;
 using TalentDesk.Repositories;
+using TalentDesk.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+// Toda tela exige login, salvo as marcadas com [Publico] (veja Filters/ControleAcessoFilter.cs)
+builder.Services.AddControllersWithViews(opcoes => opcoes.Filters.Add<ControleAcessoFilter>());
+
+// E-mails da equipe que entram como Superadmin (tela de convites).
+// Configure fora do código: variável de ambiente Superadmin__Emails__0=voce@empresa.com
+// (ou "dotnet user-secrets init" e depois dotnet user-secrets set "Superadmin:Emails:0" "voce@empresa.com")
+AutenticacaoService.ConfigurarSuperadmins(builder.Configuration.GetSection("Superadmin:Emails").Get<string[]>());
 
 // Sessão: guarda o usuário logado
 builder.Services.AddDistributedMemoryCache();

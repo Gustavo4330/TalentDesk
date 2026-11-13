@@ -95,7 +95,6 @@ Por exemplo: `C:\Users\SeuUsuario\AppData\Local\TalentDesk\talentdesk.db`.
 
 
 
-
 ## Próximos passos
 
 - [ ] Adicionar prints e um GIF de demonstração
