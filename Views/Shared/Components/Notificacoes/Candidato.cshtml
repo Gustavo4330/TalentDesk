@@ -1,0 +1,32 @@
+@model List<TalentDesk.Models.EventoCandidatura>
+@using TalentDesk.Models
+
+<details class="notificacoes">
+    <summary class="icon-button" aria-label="Notificações@(Model.Any() ? $" ({Model.Count} novas)" : "")">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6V11a7 7 0 0 0-5.5-6.84V3.5a1.5 1.5 0 0 0-3 0v.66A7 7 0 0 0 5 11v5l-2 2v1h18v-1l-2-2Z"/></svg>
+        @if (Model.Any())
+        {
+            <span class="notificacoes-ponto" aria-hidden="true"></span>
+        }
+    </summary>
+
+    <div class="dropdown notificacoes-lista">
+        <strong class="dropdown-titulo">Suas candidaturas</strong>
+        @if (Model.Any())
+        {
+            foreach (var evento in Model)
+            {
+                <a class="notificacao" asp-controller="Vagas" asp-action="Detalhes" asp-route-id="@evento.VagaId">
+                    <span class="notificacao-texto">
+                        <strong>@evento.VagaTitulo</strong>
+                        <span>@evento.Empresa · agora: @evento.Status · @evento.Data.ToString("dd/MM")</span>
+                    </span>
+                </a>
+            }
+        }
+        else
+        {
+            <p class="dropdown-vazio">Nenhuma mudança nas suas candidaturas nos últimos 14 dias.</p>
+        }
+    </div>
+</details>

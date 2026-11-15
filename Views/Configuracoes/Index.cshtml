@@ -1,0 +1,175 @@
+@model TalentDesk.Models.ConfiguracoesViewModel
+@{
+    Layout = "_AppLayout";
+    ViewData["Title"] = "Configurações";
+    ViewData["Menu"] = "configuracoes";
+}
+
+<section class="formulario-pagina config-pagina">
+    <header class="secao-cabecalho">
+        <h2>Configurações</h2>
+        <p>Gerencie seus dados, sua senha e sua conta.</p>
+    </header>
+
+    @* ===== Resumo da conta ===== *@
+    <div class="config-resumo">
+        <span class="avatar avatar-xl">
+            @Model.Iniciais
+            @if (!string.IsNullOrEmpty(Model.FotoUrl))
+            {
+                <img src="@Model.FotoUrl" alt="Sua foto" />
+            }
+        </span>
+        <div class="config-resumo-info">
+            <strong>@Model.Perfil.Nome</strong>
+            <span>@Model.Perfil.Email</span>
+            <div class="config-resumo-meta">
+                <span class="config-selo">@Model.NomePerfil</span>
+                @if (Model.DataCadastro is DateTime cadastro)
+                {
+                    <span>Membro desde @cadastro.ToString("dd/MM/yyyy")</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <nav class="config-abas" aria-label="Seções das configurações">
+        <a href="#perfil">Meu perfil</a>
+        <a href="#seguranca">Segurança</a>
+        <a href="#conta">Conta</a>
+    </nav>
+
+    @* ===== Meu perfil ===== *@
+    <form id="perfil" method="post" asp-action="SalvarPerfil" enctype="multipart/form-data" class="formulario">
+        <fieldset class="form-card">
+            <legend>Meu perfil</legend>
+
+            <div class="form-grade">
+                <label class="campo campo-inteiro">
+                    <span>Nome completo *</span>
+                    <input asp-for="Perfil.Nome" autocomplete="name" />
+                    <span asp-validation-for="Perfil.Nome" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>E-mail *</span>
+                    <input asp-for="Perfil.Email" type="email" autocomplete="email" />
+                    <span asp-validation-for="Perfil.Email" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>WhatsApp</span>
+                    <input asp-for="Perfil.Whatsapp" type="tel" placeholder="(11) 98765-4321" autocomplete="tel" />
+                    <span asp-validation-for="Perfil.Whatsapp" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>Data de nascimento</span>
+                    <input asp-for="Perfil.DataNascimento" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="Perfil.DataNascimento" class="erro"></span>
+                </label>
+
+                <div class="campo campo-inteiro">
+                    <span>Foto</span>
+                    <div class="config-foto">
+                        <label class="campo">
+                            <input asp-for="Perfil.Foto" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                        </label>
+                        @if (!string.IsNullOrEmpty(Model.FotoUrl))
+                        {
+                            <label class="campo-checkbox">
+                                <input asp-for="Perfil.RemoverFoto" />
+                                <span>Remover a foto atual</span>
+                            </label>
+                        }
+                    </div>
+                    <span class="form-dica">JPG, PNG ou WEBP com até 2 MB.</span>
+                    <span asp-validation-for="Perfil.Foto" class="erro"></span>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="formulario-acoes">
+            <button type="submit" class="btn btn-primary">Salvar alterações</button>
+        </div>
+    </form>
+
+    @* ===== Segurança ===== *@
+    <form id="seguranca" method="post" asp-action="AlterarSenha" class="formulario">
+        <fieldset class="form-card">
+            <legend>Segurança</legend>
+            <p class="form-dica">Para trocar a senha, confirme a senha atual. A nova senha precisa ter pelo menos 6 caracteres.</p>
+
+            <div class="form-grade">
+                <label class="campo campo-inteiro">
+                    <span>Senha atual *</span>
+                    <input asp-for="Senha.SenhaAtual" value="" autocomplete="current-password" />
+                    <span asp-validation-for="Senha.SenhaAtual" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>Nova senha *</span>
+                    <input asp-for="Senha.NovaSenha" value="" autocomplete="new-password" />
+                    <span asp-validation-for="Senha.NovaSenha" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>Confirmar nova senha *</span>
+                    <input asp-for="Senha.ConfirmarSenha" value="" autocomplete="new-password" />
+                    <span asp-validation-for="Senha.ConfirmarSenha" class="erro"></span>
+                </label>
+            </div>
+        </fieldset>
+
+        <div class="formulario-acoes">
+            <button type="submit" class="btn btn-primary">Alterar senha</button>
+        </div>
+    </form>
+
+    @* ===== Conta ===== *@
+    <section id="conta" class="form-card config-conta">
+        <h3 class="config-titulo">Conta</h3>
+
+        <dl class="config-dados">
+            <div>
+                <dt>Tipo de conta</dt>
+                <dd>@Model.NomePerfil</dd>
+            </div>
+            <div>
+                <dt>Cadastrada em</dt>
+                <dd>@(Model.DataCadastro?.ToString("dd/MM/yyyy 'às' HH:mm") ?? "—")</dd>
+            </div>
+        </dl>
+
+        <form method="post" asp-controller="Usuario" asp-action="Sair">
+            <button type="submit" class="btn btn-outline">Sair da conta</button>
+        </form>
+
+        <div class="zona-perigo">
+            <h4>Excluir conta</h4>
+            <p>Sua conta e seus dados de acesso serão apagados permanentemente. Essa ação não pode ser desfeita.</p>
+
+            <form method="post" asp-action="ExcluirConta" class="formulario">
+                <div class="form-grade">
+                    <label class="campo">
+                        <span>Confirme sua senha *</span>
+                        <input asp-for="Exclusao.Senha" value="" autocomplete="current-password" />
+                        <span asp-validation-for="Exclusao.Senha" class="erro"></span>
+                    </label>
+                </div>
+                <label class="campo-checkbox">
+                    <input asp-for="Exclusao.Confirmo" />
+                    <span>Entendo que a exclusão é permanente.</span>
+                </label>
+                <span asp-validation-for="Exclusao.Confirmo" class="erro"></span>
+
+                <div class="formulario-acoes">
+                    <button type="submit" class="btn btn-perigo">Excluir minha conta</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</section>
+
+@if (Model.SecaoAtiva != "perfil")
+{
+    @* Depois de um erro, rola a página até a seção que foi enviada *@
+    <script>
+        document.getElementById("@Model.SecaoAtiva")?.scrollIntoView();
+    </script>
+}

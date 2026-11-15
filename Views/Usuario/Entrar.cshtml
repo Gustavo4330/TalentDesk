@@ -1,0 +1,51 @@
+@model TalentDesk.Models.EntrarViewModel
+@{
+    ViewData["Title"] = "Entrar";
+    string? returnUrl = ViewData["ReturnUrl"] as string;
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+}
+
+<div class="entrar-pagina">
+    <div class="entrar-card">
+        <div class="entrar-marca">
+            <span class="brand-icon">
+                <img class="brand-logo" src="~/images/logo-talentdesk.jpeg" asp-append-version="true" alt="" />
+            </span>
+            <strong>Talent Desk</strong>
+        </div>
+
+        <h1>Entrar</h1>
+        <p class="entrar-subtitulo">Acesse sua conta do Talent Desk.</p>
+
+        @if (TempData["MensagemSucesso"] is string sucesso)
+        {
+            <div class="alerta-sucesso">@sucesso</div>
+        }
+
+        <form method="post" asp-action="Entrar" asp-route-returnUrl="@returnUrl" class="formulario">
+            <div asp-validation-summary="ModelOnly" class="alerta-erro"></div>
+
+            <label class="campo">
+                <span>E-mail</span>
+                <input asp-for="Email" type="email" placeholder="Digite seu e-mail" autocomplete="username" autofocus />
+                <span asp-validation-for="Email" class="erro"></span>
+            </label>
+
+            <label class="campo">
+                <span>Senha</span>
+                <input asp-for="Senha" placeholder="Digite sua senha" autocomplete="current-password" />
+                <span asp-validation-for="Senha" class="erro"></span>
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-bloco">Entrar</button>
+        </form>
+
+        <p class="entrar-rodape">
+            Candidato e ainda não tem conta? <a asp-controller="Curriculo" asp-action="Login">Criar conta</a>
+        </p>
+    </div>
+</div>

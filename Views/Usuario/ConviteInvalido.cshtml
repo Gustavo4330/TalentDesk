@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Convite indisponível";
+}
+
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+}
+
+<div class="entrar-pagina">
+    <div class="entrar-card">
+        <div class="entrar-marca">
+            <span class="brand-icon">
+                <img class="brand-logo" src="~/images/logo-talentdesk.jpeg" asp-append-version="true" alt="" />
+            </span>
+            <strong>Talent Desk</strong>
+        </div>
+
+        <h1>Convite indisponível</h1>
+        <p class="entrar-subtitulo">Este link não é válido, já foi usado ou expirou. Fale com a equipe Talent Desk para receber um novo convite.</p>
+
+        <a class="btn btn-outline btn-lg btn-bloco" asp-action="Entrar">Ir para o login</a>
+    </div>
+</div>

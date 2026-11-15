@@ -1,2 +1,19 @@
-/bin
-/obj
+bin/
+obj/
+.vs/
+*.user
+
+# Fotos enviadas pelo sistema
+wwwroot/uploads/
+
+# Banco de dados SQLite (criado automaticamente ao rodar o sistema)
+*.db
+*.db-shm
+*.db-wal
+
+# Ferramentas locais (configuração do editor e cache de lint de design)
+.claude/
+.impeccable/
+
+# Resultados de testes
+TestResults/
