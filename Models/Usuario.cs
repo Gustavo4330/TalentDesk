@@ -26,5 +26,8 @@ namespace TalentDesk.Models
 
         // Preenchida pelo banco; não vem do formulário de cadastro
         public DateTime? DataCadastro { get; set; }
+
+        // Empresa do administrador (null para candidatos e superadmin)
+        public int? EmpresaId { get; set; }
     }
 }

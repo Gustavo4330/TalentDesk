@@ -5,8 +5,9 @@ namespace TalentDesk.Models
     // Tela em que o cliente convidado cria a conta de administrador
     public class ConviteCadastroViewModel
     {
-        // O e-mail vem do convite e não pode ser trocado no formulário
+        // O e-mail e a empresa vêm do convite e não podem ser trocados no formulário
         public string Email { get; set; } = string.Empty;
+        public string? EmpresaNome { get; set; }
 
         [Required(ErrorMessage = "Informe seu nome.")]
         [StringLength(120, ErrorMessage = "O nome pode ter até 120 caracteres.")]
@@ -33,12 +34,19 @@ namespace TalentDesk.Models
         [EmailAddress(ErrorMessage = "Informe um e-mail válido.")]
         [Display(Name = "E-mail do cliente")]
         public string Email { get; set; } = string.Empty;
+
+        // Nome de uma empresa existente (o novo admin entra nela) ou de uma nova
+        [Required(ErrorMessage = "Informe a empresa do cliente.")]
+        [StringLength(120, ErrorMessage = "Use até 120 caracteres.")]
+        [Display(Name = "Empresa")]
+        public string Empresa { get; set; } = string.Empty;
     }
 
     public class ConvitesViewModel
     {
         public NovoConviteForm Form { get; set; } = new();
         public List<Convite> Convites { get; set; } = new();
+        public List<string> Empresas { get; set; } = new();
 
         // Link recém-gerado (só aparece uma vez, logo após criar)
         public string? LinkGerado { get; set; }

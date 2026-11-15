@@ -3314,3 +3314,820 @@ svg.mapa {
         flex-direction: column;
     }
 }
+
+/* =================== Vagas =================== */
+
+.btn.perigo {
+    color: var(--vermelho);
+    border-color: rgba(220, 38, 38, 0.4);
+}
+
+.btn.perigo:hover {
+    background: var(--vermelho-fundo);
+    border-color: var(--vermelho);
+}
+
+.vagas {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.vagas-cabecalho {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.vagas-aviso {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border: 1px solid var(--roxo-100);
+    border-radius: var(--raio-sm);
+    background: var(--roxo-50);
+    color: var(--roxo-900);
+    font-weight: 500;
+}
+
+.vagas-abas {
+    display: inline-flex;
+    align-self: flex-start;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid var(--borda);
+}
+
+.vagas-abas a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    color: var(--roxo-700);
+    font-weight: 600;
+    font-size: 0.92rem;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.vagas-abas a:hover {
+    background: var(--roxo-50);
+}
+
+.vagas-abas a.ativa {
+    background: linear-gradient(135deg, #6d28d9, #4c1d95);
+    color: #fff;
+}
+
+.vagas-abas a.ativa .contador {
+    background: #fff;
+    color: var(--roxo-700);
+}
+
+.vagas-abas a:focus-visible {
+    outline: 2px solid var(--roxo-500);
+    outline-offset: 2px;
+}
+
+.vagas-grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 18px;
+}
+
+.vaga-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px 22px;
+    border: 1px solid rgba(124, 58, 237, 0.08);
+    border-radius: var(--raio);
+    background: var(--painel);
+    box-shadow: var(--sombra);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vaga-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 1px 3px rgba(53, 27, 94, 0.05), 0 18px 40px rgba(109, 62, 190, 0.13);
+}
+
+.vaga-card.encerrada {
+    opacity: 0.75;
+}
+
+.vaga-card-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.vaga-card-topo h3 {
+    font-size: 1.08rem;
+    letter-spacing: -0.01em;
+    color: var(--roxo-900);
+}
+
+.vaga-card-topo h3 a {
+    text-decoration: none;
+}
+
+.vaga-card-topo h3 a:hover {
+    color: var(--roxo-600);
+}
+
+.vaga-card-topo p {
+    margin-top: 2px;
+    color: var(--texto-2);
+    font-size: 0.92rem;
+}
+
+.vaga-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--texto-2);
+    font-size: 0.9rem;
+}
+
+.vaga-info li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vaga-info svg {
+    width: 17px;
+    height: 17px;
+    color: var(--roxo-500);
+}
+
+.vaga-card-rodape {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--borda-suave);
+    color: var(--texto-3);
+    font-size: 0.82rem;
+}
+
+.vaga-card-rodape .btn {
+    margin-left: auto;
+}
+
+.vaga-inscritos strong {
+    color: var(--roxo-700);
+    font-size: 0.95rem;
+}
+
+.vagas-vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 48px 24px;
+    border: 1px dashed var(--roxo-100);
+    border-radius: var(--raio);
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--texto-2);
+    text-align: center;
+}
+
+/* ----- Detalhes ----- */
+
+.vaga-detalhes {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.vaga-detalhes .link-voltar {
+    align-self: flex-start;
+}
+
+.vaga-detalhes-grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 18px;
+    align-items: start;
+}
+
+.vaga-principal-topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.vaga-principal-topo h2 {
+    font-size: 1.5rem;
+    letter-spacing: -0.02em;
+    color: var(--roxo-900);
+}
+
+.vaga-principal-topo p {
+    margin-top: 4px;
+    color: var(--texto-2);
+}
+
+.vaga-ficha {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    margin: 0 0 22px;
+}
+
+.vaga-ficha div {
+    padding: 12px 14px;
+    border-radius: var(--raio-sm);
+    background: var(--roxo-50);
+}
+
+.vaga-ficha dt {
+    color: var(--texto-3);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.vaga-ficha dd {
+    margin: 2px 0 0;
+    color: var(--roxo-900);
+    font-weight: 600;
+}
+
+.vaga-principal h3 {
+    margin: 18px 0 8px;
+    font-size: 1.05rem;
+    color: var(--roxo-900);
+}
+
+.vaga-texto {
+    color: var(--texto-2);
+    white-space: pre-line;
+    line-height: 1.6;
+}
+
+.vaga-requisitos {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--texto-2);
+    line-height: 1.7;
+}
+
+.vaga-lateral {
+    position: sticky;
+    top: 20px;
+}
+
+.vaga-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vaga-acoes form {
+    margin: 0;
+}
+
+.vaga-inscrito-aviso {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #047857;
+    font-weight: 600;
+}
+
+.vaga-inscrito-aviso svg {
+    width: 22px;
+    height: 22px;
+}
+
+.vaga-inscritos-topo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.vaga-inscritos-topo h3 {
+    font-size: 1.1rem;
+    color: var(--roxo-900);
+}
+
+.vaga-inscritos-lista summary.status {
+    cursor: pointer;
+}
+
+@media (max-width: 1000px) {
+    .vaga-detalhes-grade {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .vaga-lateral {
+        position: static;
+    }
+}
+
+@media (max-width: 760px) {
+    .vagas-cabecalho .btn-lg {
+        width: 100%;
+    }
+
+    .vagas-abas {
+        align-self: stretch;
+    }
+
+    .vagas-abas a {
+        flex: 1;
+        justify-content: center;
+        padding: 9px 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vaga-card,
+    .vaga-card:hover {
+        transition: none;
+        transform: none;
+    }
+}
+
+/* =================== Cores extras dos ícones de card =================== */
+
+.card-icone.azul {
+    background: var(--azul-fundo);
+    color: var(--azul);
+}
+
+.card-icone.verde {
+    background: var(--verde-fundo);
+    color: var(--verde);
+}
+
+/* =================== Início do candidato =================== */
+
+.inicio {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.inicio-boas-vindas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: linear-gradient(120deg, #fff 55%, var(--roxo-50));
+}
+
+.inicio-boas-vindas h2 {
+    font-size: 1.3rem;
+    color: var(--roxo-900);
+}
+
+.inicio-boas-vindas p {
+    margin-top: 4px;
+    color: var(--texto-2);
+}
+
+.inicio-cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.inicio-grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.inicio-lateral {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.inicio-secao-topo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 12px;
+    margin-bottom: 14px;
+}
+
+.inicio-secao-topo h3 {
+    font-size: 1.1rem;
+    color: var(--roxo-900);
+}
+
+.inicio-vazio {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    color: var(--texto-2);
+}
+
+/* ----- Andamento das candidaturas ----- */
+
+.andamento-lista {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.andamento-item {
+    padding: 16px 0;
+    border-top: 1px solid var(--borda-suave);
+}
+
+.andamento-item:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+.andamento-topo {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.andamento-titulo {
+    display: block;
+    color: var(--roxo-900);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.andamento-titulo:hover {
+    color: var(--roxo-600);
+}
+
+.andamento-empresa {
+    color: var(--texto-3);
+    font-size: 0.86rem;
+}
+
+/* Barra de etapas: Inscrito → Em análise → Entrevista → Resultado */
+.etapas {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: etapa;
+}
+
+.etapas li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--texto-3);
+    font-size: 0.78rem;
+    text-align: center;
+}
+
+/* Linha que liga as bolinhas */
+.etapas li::after {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: calc(50% + 10px);
+    right: calc(-50% + 10px);
+    height: 2px;
+    background: var(--borda);
+}
+
+.etapas li:last-child::after {
+    display: none;
+}
+
+.etapas li::before {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--borda);
+    background: #fff;
+}
+
+.etapas li.feita::before {
+    border-color: var(--roxo-600);
+    background: var(--roxo-600);
+}
+
+.etapas li.feita::after {
+    background: var(--roxo-600);
+}
+
+.etapas li.atual {
+    color: var(--roxo-900);
+    font-weight: 700;
+}
+
+.etapas li.atual::before {
+    border-color: var(--roxo-600);
+    background: var(--roxo-100);
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+}
+
+.etapas.reprovado li.atual {
+    color: var(--vermelho);
+}
+
+.etapas.reprovado li.atual::before {
+    border-color: var(--vermelho);
+    background: var(--vermelho-fundo);
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+}
+
+/* ----- Currículo completo ----- */
+
+.completude-pct {
+    color: var(--roxo-700);
+    font-size: 1.3rem;
+}
+
+.completude-trilho {
+    height: 10px;
+    border-radius: 999px;
+    background: #ece8f5;
+    overflow: hidden;
+}
+
+.completude-trilho span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #8b5cf6, #6d28d9);
+}
+
+.completude-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0;
+    padding: 0;
+    list-style: none;
+    color: var(--texto-2);
+    font-size: 0.9rem;
+}
+
+.completude-lista li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.completude-icone {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 2px solid var(--borda);
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.completude-lista li.feito {
+    color: var(--texto-3);
+}
+
+.completude-lista li.feito .completude-icone {
+    border-color: var(--verde);
+    background: var(--verde);
+    color: #fff;
+}
+
+/* ----- Linha do tempo ----- */
+
+.linha-tempo {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.linha-tempo li {
+    display: flex;
+    gap: 12px;
+}
+
+.linha-tempo .status-ponto {
+    margin-top: 6px;
+    flex-shrink: 0;
+}
+
+.linha-tempo div {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    font-size: 0.88rem;
+}
+
+.linha-tempo strong {
+    color: var(--roxo-900);
+}
+
+.linha-tempo a {
+    color: var(--roxo-700);
+    text-decoration: none;
+}
+
+.linha-tempo a:hover {
+    text-decoration: underline;
+}
+
+.linha-tempo small {
+    color: var(--texto-3);
+}
+
+/* =================== Vagas: selos e salvar =================== */
+
+.vaga-selos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.vaga-salvar {
+    margin: 0;
+}
+
+.icon-button.salva {
+    color: var(--roxo-600);
+    background: var(--roxo-100);
+}
+
+.vaga-status-candidatura {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: var(--texto-2);
+    font-size: 0.9rem;
+}
+
+.vaga-resumo-inscritos {
+    color: var(--texto-2);
+}
+
+.vaga-resumo-inscritos strong {
+    color: var(--roxo-700);
+    font-size: 1.4rem;
+}
+
+/* =================== Quadro de etapas da vaga =================== */
+
+.quadro-secao {
+    scroll-margin-top: 20px;
+}
+
+.quadro-secao .vaga-inscritos-topo {
+    flex-wrap: wrap;
+}
+
+.quadro-secao .vaga-inscritos-topo .painel-texto {
+    flex-basis: 100%;
+}
+
+.quadro {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(220px, 1fr));
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.quadro-coluna {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 140px;
+    padding: 12px;
+    border-radius: var(--raio-sm);
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid var(--borda);
+}
+
+.quadro-coluna-topo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 4px 6px;
+}
+
+.quadro-coluna-topo h4 {
+    flex: 1;
+    margin: 0;
+    font-size: 0.92rem;
+    color: var(--roxo-900);
+}
+
+.quadro-cartao {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--painel);
+    box-shadow: var(--sombra);
+    font-size: 0.88rem;
+}
+
+.quadro-cartao strong {
+    color: var(--roxo-900);
+}
+
+.quadro-cartao span {
+    color: var(--texto-2);
+}
+
+.quadro-cartao small {
+    color: var(--texto-3);
+}
+
+.quadro-cartao-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.quadro-mover {
+    margin: 0;
+}
+
+.quadro-mover select {
+    width: 100%;
+    height: 36px;
+    padding: 0 10px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: #fff;
+    font-size: 0.84rem;
+}
+
+.quadro-mover select:focus {
+    outline: 2px solid var(--roxo-500);
+    outline-offset: 1px;
+}
+
+@media (max-width: 1200px) {
+    .inicio-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .inicio-grade {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+    .inicio-cards {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .quadro {
+        grid-template-columns: repeat(5, minmax(200px, 80%));
+    }
+
+    .etapas li {
+        font-size: 0.7rem;
+    }
+}

@@ -61,10 +61,10 @@ namespace TalentDesk.Filters
                 return;
             }
 
-            // Candidato que abre a tela inicial da empresa vai para o próprio currículo
+            // Candidato que abre uma tela da empresa vai para a tela inicial dele
             if (Perfis.EhCandidato(perfil) && HttpMethods.IsGet(http.Request.Method))
             {
-                context.Result = new RedirectToActionResult("MeuCurriculo", "Curriculo", null);
+                context.Result = new RedirectToActionResult("Index", "Inicio", null);
                 return;
             }
 

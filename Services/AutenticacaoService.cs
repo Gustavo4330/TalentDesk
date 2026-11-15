@@ -37,7 +37,12 @@ namespace TalentDesk.Services
                 ? Perfis.Superadmin
                 : _usuarioRepository.ObterPerfil(usuario.Id);
 
-            SessaoUsuario.Entrar(sessao, usuario.Id, usuario.Nome, perfil, usuario.FotoUrl);
+            // Superadmin não age em nome de uma empresa
+            var empresa = usuario.EmpresaId.HasValue && perfil != Perfis.Superadmin
+                ? new EmpresaRepository().ObterPorId(usuario.EmpresaId.Value)
+                : null;
+
+            SessaoUsuario.Entrar(sessao, usuario.Id, usuario.Nome, perfil, usuario.FotoUrl, empresa?.Id, empresa?.Nome);
             return usuario;
         }
     }

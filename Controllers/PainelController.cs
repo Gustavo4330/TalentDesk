@@ -18,16 +18,11 @@ namespace TalentDesk.Controllers
             return View(_relatorioService.Montar(filtro));
         }
 
+        // Endereço antigo: vagas agora têm controller próprio
         [HttpGet]
         public IActionResult Vagas()
         {
-            ViewData["Menu"] = "vagas";
-            ViewData["Title"] = "Vagas";
-            // Vagas valem para os dois lados: a empresa publica, o candidato consulta
-            ViewData["Descricao"] = Perfis.EhCandidato(SessaoUsuario.Perfil(HttpContext.Session))
-                ? "Em breve você verá aqui as vagas publicadas pelas empresas."
-                : "Em breve você poderá publicar vagas e vincular currículos a cada processo seletivo.";
-            return View("EmBreve");
+            return RedirectToAction("Index", "Vagas");
         }
 
         // Endereço antigo: a aba agora tem controller próprio

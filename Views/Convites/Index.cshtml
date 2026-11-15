@@ -8,7 +8,7 @@
 <section class="convites">
     <header class="secao-cabecalho">
         <h2>Convites de administrador</h2>
-        <p>Gere um link de uso único para o cliente criar a conta de administrador da empresa. O link vale por 7 dias.</p>
+        <p>Gere um link de uso único para o cliente criar a conta de administrador. Use o nome de uma empresa existente para adicionar mais um administrador a ela. O link vale por 7 dias.</p>
     </header>
 
     <div class="form-card convite-novo">
@@ -18,6 +18,14 @@
                 <input asp-for="Form.Email" type="email" placeholder="cliente@empresa.com.br" autocomplete="off" />
                 <span asp-validation-for="Form.Email" class="erro"></span>
             </label>
+            <label class="campo">
+                <span>Empresa</span>
+                <input asp-for="Form.Empresa" list="empresasExistentes" placeholder="Nova ou existente" autocomplete="off" />
+                <span asp-validation-for="Form.Empresa" class="erro"></span>
+            </label>
+            <datalist id="empresasExistentes">
+                @foreach (var empresa in Model.Empresas) { <option value="@empresa"></option> }
+            </datalist>
             <button type="submit" class="btn btn-primary btn-lg">Gerar link</button>
         </form>
 
@@ -45,6 +53,7 @@
                 <thead>
                     <tr>
                         <th>E-mail</th>
+                        <th>Empresa</th>
                         <th>Criado em</th>
                         <th>Expira em</th>
                         <th>Situação</th>
@@ -56,6 +65,7 @@
                         string classe = convite.Usado ? "status-aprovado" : convite.Expirado ? "status-reprovado" : "status-analise";
                         <tr>
                             <td data-rotulo="E-mail">@convite.Email</td>
+                            <td data-rotulo="Empresa">@(convite.EmpresaNome ?? "—")</td>
                             <td data-rotulo="Criado em">@convite.CriadoEm.ToString("dd/MM/yyyy HH:mm")</td>
                             <td data-rotulo="Expira em">@convite.ExpiraEm.ToString("dd/MM/yyyy HH:mm")</td>
                             <td data-rotulo="Situação"><span class="status @classe">@convite.Situacao</span></td>

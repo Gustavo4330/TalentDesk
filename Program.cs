@@ -12,6 +12,9 @@ builder.Services.AddControllersWithViews(opcoes => opcoes.Filters.Add<ControleAc
 // (ou "dotnet user-secrets init" e depois dotnet user-secrets set "Superadmin:Emails:0" "voce@empresa.com")
 AutenticacaoService.ConfigurarSuperadmins(builder.Configuration.GetSection("Superadmin:Emails").Get<string[]>());
 
+// Arquivo do banco: padrão em %LOCALAPPDATA%\TalentDesk (veja Models/Conexao.cs)
+TalentDesk.Conexao.DefinirCaminho(builder.Configuration["Banco:Caminho"]);
+
 // Sessão: guarda o usuário logado
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(opcoes =>
@@ -44,3 +47,6 @@ app.MapControllerRoute(
 BancoDeDados.TentarInicializar(app.Logger);
 
 app.Run();
+
+// Torna o Program visível para os testes de integração (tests/Curriculo.Tests)
+public partial class Program { }

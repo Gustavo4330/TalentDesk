@@ -1,0 +1,198 @@
+@model TalentDesk.Models.InicioCandidatoViewModel
+@using TalentDesk.Models
+@{
+    Layout = "_AppLayout";
+    ViewData["Title"] = "Início";
+    ViewData["Menu"] = "inicio";
+}
+
+<section class="inicio">
+    @if (!Model.TemCurriculo)
+    {
+        <div class="inicio-boas-vindas form-card">
+            <div>
+                <h2>Comece pelo seu currículo</h2>
+                <p>Com o currículo cadastrado você pode se candidatar às vagas e acompanhar cada etapa por aqui.</p>
+            </div>
+            <a class="btn btn-primary btn-lg" asp-controller="Curriculo" asp-action="Cadastrar">Cadastrar meu currículo</a>
+        </div>
+    }
+
+    @* ===== Resumo ===== *@
+    <div class="inicio-cards">
+        <a class="card-resumo" asp-controller="Vagas" asp-action="Index" asp-route-aba="@FiltroVaga.AbaCandidaturas">
+            <span class="card-icone roxo">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2Zm0 3h6V5H9v1Z"/></svg>
+            </span>
+            <span class="card-info">
+                <span class="card-rotulo">Candidaturas</span>
+                <span class="card-valor">@Model.TotalCandidaturas</span>
+                <span class="card-detalhe">enviadas no total</span>
+            </span>
+        </a>
+        <a class="card-resumo" asp-controller="Vagas" asp-action="Index" asp-route-aba="@FiltroVaga.AbaCandidaturas">
+            <span class="card-icone azul">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm1 5h-2v6l5.2 3.1 1-1.6-4.2-2.5V7Z"/></svg>
+            </span>
+            <span class="card-info">
+                <span class="card-rotulo">Em andamento</span>
+                <span class="card-valor">@Model.EmAndamento</span>
+                <span class="card-detalhe">em análise ou entrevista</span>
+            </span>
+        </a>
+        <a class="card-resumo" asp-controller="Vagas" asp-action="Index" asp-route-aba="@FiltroVaga.AbaCandidaturas">
+            <span class="card-icone verde">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm-1.2 13.6 6.3-6.3-1.4-1.4-4.9 4.9-2.3-2.3-1.4 1.4 3.7 3.7Z"/></svg>
+            </span>
+            <span class="card-info">
+                <span class="card-rotulo">Aprovações</span>
+                <span class="card-valor">@Model.Aprovadas</span>
+                <span class="card-detalhe">processos concluídos com sucesso</span>
+            </span>
+        </a>
+        <a class="card-resumo" asp-controller="Vagas" asp-action="Index">
+            <span class="card-icone rosa">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 16.9l-6.1 3.5 1.5-6.8L2.2 9l6.9-.7L12 2Z"/></svg>
+            </span>
+            <span class="card-info">
+                <span class="card-rotulo">Vagas novas</span>
+                <span class="card-valor">@Model.VagasNovas</span>
+                <span class="card-detalhe">nos últimos @InicioCandidatoViewModel.DiasVagasNovas dias · @Model.TotalSalvas @(Model.TotalSalvas == 1 ? "salva" : "salvas")</span>
+            </span>
+        </a>
+    </div>
+
+    <div class="inicio-grade">
+        @* ===== Andamento das candidaturas ===== *@
+        <section class="form-card inicio-candidaturas" aria-labelledby="tituloAndamento">
+            <header class="inicio-secao-topo">
+                <h3 id="tituloAndamento">Minhas candidaturas</h3>
+                <a class="dash-link" asp-controller="Vagas" asp-action="Index" asp-route-aba="@FiltroVaga.AbaCandidaturas">Ver todas <span aria-hidden="true">→</span></a>
+            </header>
+
+            @if (Model.Candidaturas.Count == 0)
+            {
+                <div class="inicio-vazio">
+                    <p>Você ainda não se candidatou a nenhuma vaga.</p>
+                    <a class="btn btn-outline" asp-controller="Vagas" asp-action="Index">Ver vagas abertas</a>
+                </div>
+            }
+            else
+            {
+                <ul class="andamento-lista">
+                    @foreach (var vaga in Model.Candidaturas.Take(5))
+                    {
+                        int etapa = InicioCandidatoViewModel.EtapaAtual(vaga.StatusCandidatura);
+                        bool reprovado = vaga.StatusCandidatura == StatusCurriculo.Reprovado;
+                        <li class="andamento-item">
+                            <div class="andamento-topo">
+                                <div>
+                                    <a class="andamento-titulo" asp-controller="Vagas" asp-action="Detalhes" asp-route-id="@vaga.Id">@vaga.Titulo</a>
+                                    <span class="andamento-empresa">@vaga.Empresa@(vaga.Aberta ? "" : " · vaga encerrada")</span>
+                                </div>
+                                <span class="status @StatusCurriculo.ClasseCss(vaga.StatusCandidatura!)">@vaga.StatusCandidatura</span>
+                            </div>
+                            <ol class="etapas @(reprovado ? "reprovado" : "")" aria-label="Etapa atual: @InicioCandidatoViewModel.Etapas[etapa]">
+                                @for (int i = 0; i < InicioCandidatoViewModel.Etapas.Count; i++)
+                                {
+                                    string classe = i < etapa ? "feita" : i == etapa ? "atual" : "";
+                                    string rotulo = i == 3 && etapa == 3 ? vaga.StatusCandidatura! : InicioCandidatoViewModel.Etapas[i];
+                                    <li class="@classe" aria-current="@(i == etapa ? "step" : null)"><span>@rotulo</span></li>
+                                }
+                            </ol>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <div class="inicio-lateral">
+            @* ===== Currículo completo ===== *@
+            @if (Model.TemCurriculo)
+            {
+                <section class="form-card inicio-completude" aria-labelledby="tituloCompletude">
+                    <header class="inicio-secao-topo">
+                        <h3 id="tituloCompletude">Seu currículo</h3>
+                        <strong class="completude-pct">@Model.PercentualCompleto%</strong>
+                    </header>
+                    <div class="completude-trilho" role="progressbar" aria-valuenow="@Model.PercentualCompleto" aria-valuemin="0" aria-valuemax="100" aria-label="Currículo completo">
+                        <span style="width: @Model.PercentualCompleto%"></span>
+                    </div>
+                    <ul class="completude-lista">
+                        @foreach (var item in Model.Completude)
+                        {
+                            <li class="@(item.Feito ? "feito" : "")">
+                                <span class="completude-icone" aria-hidden="true">@(item.Feito ? "✓" : "")</span>
+                                @item.Rotulo
+                                <span class="sr-only">@(item.Feito ? "(preenchido)" : "(pendente)")</span>
+                            </li>
+                        }
+                    </ul>
+                    @if (Model.PercentualCompleto < 100)
+                    {
+                        <a class="btn btn-outline btn-bloco" asp-controller="Curriculo" asp-action="MeuCurriculo">Completar currículo</a>
+                    }
+                </section>
+            }
+
+            @* ===== Atualizações recentes ===== *@
+            <section class="form-card" aria-labelledby="tituloAtualizacoes">
+                <header class="inicio-secao-topo">
+                    <h3 id="tituloAtualizacoes">Atualizações</h3>
+                </header>
+                @if (Model.Atualizacoes.Count == 0)
+                {
+                    <p class="painel-texto">As mudanças nas suas candidaturas aparecem aqui.</p>
+                }
+                else
+                {
+                    <ol class="linha-tempo">
+                        @foreach (var evento in Model.Atualizacoes)
+                        {
+                            <li>
+                                <span class="status-ponto @StatusCurriculo.ClasseCss(evento.Status)"></span>
+                                <div>
+                                    <strong>@evento.Descricao</strong>
+                                    <a asp-controller="Vagas" asp-action="Detalhes" asp-route-id="@evento.VagaId">@evento.VagaTitulo</a>
+                                    <small>@evento.Empresa · <time datetime="@evento.Data.ToString("yyyy-MM-ddTHH:mm")">@evento.Data.ToString("dd/MM/yyyy HH:mm")</time></small>
+                                </div>
+                            </li>
+                        }
+                    </ol>
+                }
+            </section>
+        </div>
+    </div>
+
+    @* ===== Recomendadas ===== *@
+    @if (Model.Recomendadas.Count > 0)
+    {
+        <section class="inicio-recomendadas" aria-labelledby="tituloRecomendadas">
+            <header class="inicio-secao-topo">
+                <h3 id="tituloRecomendadas">Vagas para o seu perfil</h3>
+                <p class="painel-texto">Com base na sua área, cargo e competências.</p>
+            </header>
+            <div class="vagas-grade">
+                @foreach (var vaga in Model.Recomendadas)
+                {
+                    <article class="vaga-card">
+                        <header class="vaga-card-topo">
+                            <div>
+                                <h3><a asp-controller="Vagas" asp-action="Detalhes" asp-route-id="@vaga.Id">@vaga.Titulo</a></h3>
+                                <p>@vaga.Empresa</p>
+                            </div>
+                        </header>
+                        <ul class="vaga-info">
+                            <li>@vaga.Cidade · @vaga.Modalidade</li>
+                            <li>@vaga.TipoContrato · @vaga.Area</li>
+                        </ul>
+                        <footer class="vaga-card-rodape">
+                            <span>@vaga.PublicadaHa</span>
+                            <a class="btn btn-primary btn-sm" asp-controller="Vagas" asp-action="Detalhes" asp-route-id="@vaga.Id">Ver vaga</a>
+                        </footer>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+</section>

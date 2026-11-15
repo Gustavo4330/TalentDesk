@@ -6,7 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Não gera o Curriculo.exe: o antivírus (AVG) bloqueia esse arquivo. O sistema roda pelo "dotnet" normalmente. -->
     <UseAppHost>false</UseAppHost>
+    <UserSecretsId>db4f579b-0ca2-4f7e-859d-fe774350c4df</UserSecretsId>
   </PropertyGroup>
+
+  <!-- O projeto de testes fica em tests/ e é compilado à parte -->
+  <ItemGroup>
+    <Compile Remove="tests/**" />
+    <Content Remove="tests/**" />
+    <None Remove="tests/**" />
+    <EmbeddedResource Remove="tests/**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />

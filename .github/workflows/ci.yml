@@ -1,0 +1,38 @@
+# Build e testes automáticos a cada push e pull request
+name: CI
+
+on:
+  push:
+    branches: [main, migracao-sqlite]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-e-testes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restaurar pacotes
+        run: dotnet restore tests/Curriculo.Tests
+
+      - name: Compilar
+        run: dotnet build tests/Curriculo.Tests --no-restore --configuration Release
+
+      - name: Testar
+        run: dotnet test tests/Curriculo.Tests --no-build --configuration Release --logger "trx;LogFileName=resultados.trx"
+
+      - name: Guardar resultado dos testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-dos-testes
+          path: tests/Curriculo.Tests/TestResults/*.trx

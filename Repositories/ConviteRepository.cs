@@ -21,7 +21,7 @@ namespace TalentDesk.Repositories
         }
 
         // Cria o convite e devolve o token (só aparece agora, para montar o link)
-        public string Criar(string email, int? criadoPor)
+        public string Criar(string email, int empresaId, int? criadoPor)
         {
             string token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
                 .TrimEnd('=').Replace('+', '-').Replace('/', '_');
@@ -29,8 +29,9 @@ namespace TalentDesk.Repositories
 
             using var conexao = AbrirConexao();
             using var comando = new SqliteCommand(@"
-                INSERT INTO convites (email, token_hash, criado_por, criado_em, expira_em)
-                VALUES (@email, @token_hash, @criado_por, @criado_em, @expira_em);", conexao);
+                INSERT INTO convites (email, token_hash, empresa_id, criado_por, criado_em, expira_em)
+                VALUES (@email, @token_hash, @empresa_id, @criado_por, @criado_em, @expira_em);", conexao);
+            comando.Parameters.AddWithValue("@empresa_id", empresaId);
 
             comando.Parameters.AddWithValue("@email", email.Trim());
             comando.Parameters.AddWithValue("@token_hash", Hash(token));
@@ -49,9 +50,9 @@ namespace TalentDesk.Repositories
 
             using var conexao = AbrirConexao();
             using var comando = new SqliteCommand(@"
-                SELECT id, email, criado_em, expira_em, usado_em
-                FROM convites
-                WHERE token_hash = @token_hash;", conexao);
+                SELECT c.id, c.email, c.criado_em, c.expira_em, c.usado_em, e.nome
+                FROM convites c LEFT JOIN empresas e ON e.id = c.empresa_id
+                WHERE c.token_hash = @token_hash;", conexao);
             comando.Parameters.AddWithValue("@token_hash", Hash(token));
 
             using var leitor = comando.ExecuteReader();
@@ -65,9 +66,9 @@ namespace TalentDesk.Repositories
         {
             using var conexao = AbrirConexao();
             using var comando = new SqliteCommand(@"
-                SELECT id, email, criado_em, expira_em, usado_em
-                FROM convites
-                ORDER BY id DESC
+                SELECT c.id, c.email, c.criado_em, c.expira_em, c.usado_em, e.nome
+                FROM convites c LEFT JOIN empresas e ON e.id = c.empresa_id
+                ORDER BY c.id DESC
                 LIMIT @limite;", conexao);
             comando.Parameters.AddWithValue("@limite", limite);
 
@@ -86,7 +87,8 @@ namespace TalentDesk.Repositories
             Email = leitor.GetString(1),
             CriadoEm = BancoDeDados.LerData(leitor[2]) ?? DateTime.MinValue,
             ExpiraEm = BancoDeDados.LerData(leitor[3]) ?? DateTime.MinValue,
-            UsadoEm = BancoDeDados.LerData(leitor[4])
+            UsadoEm = BancoDeDados.LerData(leitor[4]),
+            EmpresaNome = leitor[5] as string
         };
 
         private static string Hash(string token) =>

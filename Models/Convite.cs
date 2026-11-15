@@ -5,6 +5,7 @@ namespace TalentDesk.Models
     {
         public int Id { get; set; }
         public string Email { get; set; } = string.Empty;
+        public string? EmpresaNome { get; set; }
         public DateTime CriadoEm { get; set; }
         public DateTime ExpiraEm { get; set; }
         public DateTime? UsadoEm { get; set; }

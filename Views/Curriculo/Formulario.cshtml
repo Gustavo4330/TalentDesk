@@ -78,14 +78,6 @@
                     <input asp-for="AnosExperiencia" type="number" min="0" max="60" />
                     <span asp-validation-for="AnosExperiencia" class="erro"></span>
                 </label>
-                @if (Model.EhEdicao)
-                {
-                    @* O status é definido pela empresa; o candidato só acompanha *@
-                    <div class="campo">
-                        <span>Status no processo seletivo</span>
-                        <span class="status @TalentDesk.Models.StatusCurriculo.ClasseCss(Model.Status)">@Model.Status</span>
-                    </div>
-                }
                 <label class="campo campo-inteiro">
                     <span>Resumo profissional</span>
                     <textarea asp-for="Resumo" rows="4" placeholder="Conte um pouco sobre a trajetória e seus objetivos profissionais."></textarea>

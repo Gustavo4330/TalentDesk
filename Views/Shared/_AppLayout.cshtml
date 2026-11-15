@@ -1,4 +1,4 @@
-﻿@using TalentDesk.Models
+@using TalentDesk.Models
 @using TalentDesk.Services
 @{
     Layout = "_Layout";
@@ -33,7 +33,7 @@
 <div class="app">
     <aside class="sidebar" data-menu>
         <div class="sidebar-topo">
-            <a class="brand" asp-controller="Curriculo" asp-action="@(ehCandidato ? "MeuCurriculo" : "Index")">
+            <a class="brand" asp-controller="@(ehCandidato ? "Inicio" : "Curriculo")" asp-action="Index">
                 <span class="brand-icon">
                     <img class="brand-logo" src="~/images/logo-talentdesk.jpeg" asp-append-version="true" alt="" />
                 </span>
@@ -72,15 +72,19 @@
 
                 @if (ehCandidato)
                 {
+                    <a class="@Ativo("inicio")" aria-current="@Atual("inicio")" asp-controller="Inicio" asp-action="Index">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3L12 3Z"/></svg>
+                        <span>Início</span>
+                    </a>
                     <a class="@Ativo("meu-curriculo")" aria-current="@Atual("meu-curriculo")" asp-controller="Curriculo" asp-action="MeuCurriculo">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm5 4a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Zm-4 11h8v-1c0-1.7-2.7-2.5-4-2.5S8 14.3 8 16v1Z"/></svg>
                         <span>Meu currículo</span>
                     </a>
                 }
 
-                <a class="@Ativo("vagas")" aria-current="@Atual("vagas")" asp-controller="Painel" asp-action="Vagas">
+                <a class="@Ativo("vagas")" aria-current="@Atual("vagas")" asp-controller="Vagas" asp-action="Index">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2Zm0 3h6V5H9v1ZM4 8v4h7v-1h2v1h7V8H4Zm16 6h-7v1h-2v-1H4v5h16v-5Z"/></svg>
-                    <span>Vagas</span>
+                    <span>@(ehEmpresa ? "Minhas vagas" : "Vagas")</span>
                 </a>
 
                 @if (ehEmpresa)
@@ -117,7 +121,7 @@
                     </span>
                     <div class="sidebar-user-info">
                         <strong>@SessaoUsuario.Nome(sessao)</strong>
-                        <span>@perfil</span>
+                        <span>@perfil@(SessaoUsuario.EmpresaNome(sessao) is string empresa ? $" · {empresa}" : "")</span>
                     </div>
                     <form method="post" asp-controller="Usuario" asp-action="Sair">
                         <button type="submit" class="sidebar-user-action">
@@ -145,6 +149,11 @@
                     <h1>@(logado ? $"Olá, {primeiroNome}!" : "Olá!")</h1>
                     <p>@(ehCandidato ? "Mantenha seu currículo atualizado e acompanhe as vagas." : "Encontre os melhores talentos para sua equipe.")</p>
                 </div>
+
+                @if (ehCandidato)
+                {
+                    @await Component.InvokeAsync("Notificacoes")
+                }
 
                 @if (ehEmpresa)
                 {

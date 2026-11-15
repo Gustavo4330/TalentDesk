@@ -1,0 +1,182 @@
+@model TalentDesk.Models.VagasIndexViewModel
+@using TalentDesk.Models
+@{
+    Layout = "_AppLayout";
+    ViewData["Title"] = Model.EhEmpresa ? "Minhas vagas" : "Vagas";
+    ViewData["Menu"] = "vagas";
+    var filtro = Model.Filtro;
+    string paginaAtual = Context.Request.Path + Context.Request.QueryString;
+}
+
+@* Cartão de uma vaga (mesmo visual para empresa e candidato) *@
+@{
+    async Task Cartao(Vaga vaga)
+    {
+        <article class="vaga-card @(vaga.Aberta ? "" : "encerrada")">
+            <header class="vaga-card-topo">
+                <div>
+                    <h3><a asp-action="Detalhes" asp-route-id="@vaga.Id">@vaga.Titulo</a></h3>
+                    <p>@vaga.Empresa</p>
+                </div>
+                <div class="vaga-selos">
+                    @if (!vaga.Aberta)
+                    {
+                        <span class="status status-reprovado">Encerrada</span>
+                    }
+                    @if (vaga.JaCandidatado)
+                    {
+                        @* Status desta candidatura, definido pela empresa da vaga *@
+                        <span class="status @StatusCurriculo.ClasseCss(vaga.StatusCandidatura!)" title="Status da sua candidatura">@vaga.StatusCandidatura</span>
+                    }
+                </div>
+            </header>
+            <ul class="vaga-info">
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 1 7 7c0 5.25-7 13-7 13S5 14.25 5 9a7 7 0 0 1 7-7Zm0 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"/></svg>
+                    @vaga.Cidade · @vaga.Modalidade
+                </li>
+                <li>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3V5a2 2 0 0 1 2-2Zm0 3h6V5H9v1Z"/></svg>
+                    @vaga.TipoContrato · @vaga.Area
+                </li>
+                @if (vaga.FaixaSalarial is string salario)
+                {
+                    <li>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm1 4h-2v1.1A3 3 0 0 0 11.5 13h1a1 1 0 0 1 0 2H9v2h2v1h2v-1.1a3 3 0 0 0-.5-5.9h-1a1 1 0 0 1 0-2H15V7h-2V6Z"/></svg>
+                        @salario
+                    </li>
+                }
+            </ul>
+            <footer class="vaga-card-rodape">
+                <span>@vaga.PublicadaHa</span>
+                @if (Model.EhEmpresa)
+                {
+                    <span class="vaga-inscritos"><strong>@vaga.TotalInscritos</strong> @(vaga.TotalInscritos == 1 ? "inscrito" : "inscritos")</span>
+                }
+                else
+                {
+                    <form method="post" asp-action="AlternarSalva" asp-route-id="@vaga.Id" class="vaga-salvar">
+                        <input type="hidden" name="returnUrl" value="@paginaAtual" />
+                        <button type="submit" class="icon-button icon-button-sm @(vaga.Salva ? "salva" : "")"
+                                aria-pressed="@(vaga.Salva ? "true" : "false")"
+                                aria-label="@(vaga.Salva ? "Remover dos salvos" : "Salvar vaga") @vaga.Titulo"
+                                title="@(vaga.Salva ? "Remover dos salvos" : "Salvar vaga")">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="@(vaga.Salva ? "M6 2h12a1 1 0 0 1 1 1v19l-7-4-7 4V3a1 1 0 0 1 1-1Z" : "M6 2h12a1 1 0 0 1 1 1v19l-7-4-7 4V3a1 1 0 0 1 1-1Zm1 2v14.6l5-2.9 5 2.9V4H7Z")"/></svg>
+                        </button>
+                    </form>
+                }
+                <a class="btn btn-outline btn-sm" asp-action="Detalhes" asp-route-id="@vaga.Id">Ver vaga</a>
+            </footer>
+        </article>
+    }
+}
+
+<section class="vagas">
+    <header class="vagas-cabecalho">
+        <div class="secao-cabecalho">
+            <h2>@ViewData["Title"]</h2>
+            <p>@(Model.EhEmpresa
+                    ? "Publique vagas e acompanhe os candidatos inscritos em cada uma."
+                    : "Encontre oportunidades e candidate-se com o seu currículo.")</p>
+        </div>
+        @if (Model.EhEmpresa)
+        {
+            <a class="btn btn-primary btn-lg" asp-action="Nova">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm1 5h-2v4H7v2h4v4h2v-4h4v-2h-4V7Z"/></svg>
+                <span>Nova vaga</span>
+            </a>
+        }
+    </header>
+
+    @if (!Model.EhEmpresa)
+    {
+        @if (!Model.TemCurriculo)
+        {
+            <div class="vagas-aviso" role="status">
+                <span>Para se candidatar, cadastre primeiro o seu currículo.</span>
+                <a class="btn btn-primary btn-sm" asp-controller="Curriculo" asp-action="Cadastrar">Cadastrar currículo</a>
+            </div>
+        }
+
+        <nav class="vagas-abas" aria-label="Vagas">
+            @{ bool abertas = !filtro.EhCandidaturas && !filtro.EhSalvas; }
+            <a asp-action="Index" class="@(abertas ? "ativa" : "")" aria-current="@(abertas ? "page" : null)">Vagas abertas</a>
+            <a asp-action="Index" asp-route-aba="@FiltroVaga.AbaCandidaturas" class="@(filtro.EhCandidaturas ? "ativa" : "")" aria-current="@(filtro.EhCandidaturas ? "page" : null)">
+                Minhas candidaturas <span class="contador">@Model.TotalCandidaturas</span>
+            </a>
+            <a asp-action="Index" asp-route-aba="@FiltroVaga.AbaSalvas" class="@(filtro.EhSalvas ? "ativa" : "")" aria-current="@(filtro.EhSalvas ? "page" : null)">
+                Salvas <span class="contador">@Model.TotalSalvas</span>
+            </a>
+        </nav>
+
+        @if (!filtro.EhCandidaturas && !filtro.EhSalvas)
+        {
+            <form class="filtros" method="get" asp-action="Index" role="search">
+                <label class="filtro-busca">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.8l4.4 4.4-1.4 1.4-4.4-4.4A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"/></svg>
+                    <input type="search" name="busca" value="@filtro.Busca" placeholder="Buscar por cargo, empresa ou requisito..." aria-label="Buscar vagas" />
+                </label>
+                <select name="area" class="filtro-select @(filtro.Area == null ? "" : "ativo")" data-auto-submit aria-label="Área">
+                    <option value="">Área</option>
+                    @foreach (var area in Model.Areas)
+                    {
+                        <option value="@area" selected="@(area == filtro.Area)">@area</option>
+                    }
+                </select>
+                <select name="modalidade" class="filtro-select @(filtro.Modalidade == null ? "" : "ativo")" data-auto-submit aria-label="Modalidade">
+                    <option value="">Modalidade</option>
+                    @foreach (var modalidade in OpcoesVaga.Modalidades)
+                    {
+                        <option value="@modalidade" selected="@(modalidade == filtro.Modalidade)">@modalidade</option>
+                    }
+                </select>
+                @if (filtro.TemFiltro)
+                {
+                    <a class="link" asp-action="Index">Limpar filtros</a>
+                }
+                <noscript><button type="submit" class="btn btn-outline">Buscar</button></noscript>
+            </form>
+        }
+    }
+
+    @if (Model.Vagas.Count == 0)
+    {
+        <div class="vagas-vazio">
+            <p>
+                @if (Model.EhEmpresa)
+                {
+                    @:Você ainda não publicou nenhuma vaga.
+                }
+                else if (filtro.EhCandidaturas)
+                {
+                    @:Você ainda não se candidatou a nenhuma vaga.
+                }
+                else if (filtro.EhSalvas)
+                {
+                    @:Você ainda não salvou nenhuma vaga. Use o marcador nos cartões para guardar as que interessam.
+                }
+                else if (filtro.TemFiltro)
+                {
+                    @:Nenhuma vaga encontrada com esses filtros.
+                }
+                else
+                {
+                    @:Nenhuma vaga aberta no momento. Volte em breve!
+                }
+            </p>
+            @if (Model.EhEmpresa)
+            {
+                <a class="btn btn-primary" asp-action="Nova">Publicar a primeira vaga</a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="vagas-grade">
+            @foreach (var vaga in Model.Vagas)
+            {
+                await Cartao(vaga);
+            }
+        </div>
+    }
+</section>

@@ -91,7 +91,7 @@ namespace TalentDesk.Controllers
             }
 
             ViewData["Token"] = token;
-            return View(new ConviteCadastroViewModel { Email = convite.Email });
+            return View(new ConviteCadastroViewModel { Email = convite.Email, EmpresaNome = convite.EmpresaNome });
         }
 
         [HttpPost]
@@ -104,8 +104,9 @@ namespace TalentDesk.Controllers
                 return View("ConviteInvalido");
             }
 
-            // O e-mail é sempre o do convite, mesmo que o formulário seja alterado
+            // E-mail e empresa são sempre os do convite, mesmo que o formulário seja alterado
             model.Email = convite.Email;
+            model.EmpresaNome = convite.EmpresaNome;
             ViewData["Token"] = token;
 
             if (!ModelState.IsValid)
@@ -227,7 +228,7 @@ namespace TalentDesk.Controllers
         // Tela inicial de cada perfil
         private IActionResult Inicio() =>
             Perfis.EhCandidato(SessaoUsuario.Perfil(HttpContext.Session))
-                ? RedirectToAction("MeuCurriculo", "Curriculo")
+                ? RedirectToAction("Index", "Inicio")
                 : RedirectToAction("Index", "Curriculo");
     }
 }

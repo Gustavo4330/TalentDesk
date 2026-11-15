@@ -9,12 +9,29 @@ namespace TalentDesk.Services
         private const string ChaveNome = "UsuarioNome";
         private const string ChavePerfil = "UsuarioPerfil";
         private const string ChaveFoto = "UsuarioFoto";
+        private const string ChaveEmpresaId = "UsuarioEmpresaId";
+        private const string ChaveEmpresaNome = "UsuarioEmpresaNome";
 
-        public static void Entrar(ISession sessao, int id, string nome, string perfil, string? foto = null)
+        public static void Entrar(ISession sessao, int id, string nome, string perfil, string? foto = null,
+                                  int? empresaId = null, string? empresaNome = null)
         {
             sessao.SetInt32(ChaveId, id);
             sessao.SetString(ChavePerfil, perfil);
+            if (empresaId.HasValue)
+            {
+                sessao.SetInt32(ChaveEmpresaId, empresaId.Value);
+                sessao.SetString(ChaveEmpresaNome, empresaNome ?? string.Empty);
+            }
             AtualizarDados(sessao, nome, foto);
+        }
+
+        // Empresa do administrador logado (null para candidato e superadmin)
+        public static int? EmpresaId(ISession sessao) => sessao.GetInt32(ChaveEmpresaId);
+
+        public static string? EmpresaNome(ISession sessao)
+        {
+            string? nome = sessao.GetString(ChaveEmpresaNome);
+            return string.IsNullOrWhiteSpace(nome) ? null : nome;
         }
 
         // Usado quando o usuário edita o perfil nas Configurações

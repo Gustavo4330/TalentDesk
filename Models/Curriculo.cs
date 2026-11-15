@@ -74,18 +74,19 @@ namespace TalentDesk.Models
             }
         }
 
-        public static string TempoDesde(DateTime data)
+        // Ex.: "Cadastrado há 3 dias" (ou "Publicada há 3 dias", com outro prefixo)
+        public static string TempoDesde(DateTime data, string prefixo = "Cadastrado")
         {
             var dias = (int)(DateTime.Today - data.Date).TotalDays;
 
-            if (dias <= 0) return "Cadastrado hoje";
-            if (dias == 1) return "Cadastrado ontem";
-            if (dias < 7) return $"Cadastrado há {dias} dias";
-            if (dias < 14) return "Cadastrado há 1 semana";
-            if (dias < 30) return $"Cadastrado há {dias / 7} semanas";
-            if (dias < 60) return "Cadastrado há 1 mês";
-            if (dias < 365) return $"Cadastrado há {dias / 30} meses";
-            return dias < 730 ? "Cadastrado há 1 ano" : $"Cadastrado há {dias / 365} anos";
+            if (dias <= 0) return $"{prefixo} hoje";
+            if (dias == 1) return $"{prefixo} ontem";
+            if (dias < 7) return $"{prefixo} há {dias} dias";
+            if (dias < 14) return $"{prefixo} há 1 semana";
+            if (dias < 30) return $"{prefixo} há {dias / 7} semanas";
+            if (dias < 60) return $"{prefixo} há 1 mês";
+            if (dias < 365) return $"{prefixo} há {dias / 30} meses";
+            return dias < 730 ? $"{prefixo} há 1 ano" : $"{prefixo} há {dias / 365} anos";
         }
     }
 }

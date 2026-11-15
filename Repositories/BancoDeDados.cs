@@ -112,18 +112,104 @@ namespace TalentDesk.Repositories
                 usado_em TEXT NULL,
                 usado_por INTEGER NULL REFERENCES usuarios (id) ON DELETE SET NULL
             );
+
+            -- Vagas publicadas pela empresa. Só quem criou edita e encerra (criado_por).
+            CREATE TABLE IF NOT EXISTS vagas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                titulo TEXT NOT NULL,
+                empresa TEXT NOT NULL,
+                area TEXT NOT NULL,
+                cidade TEXT NOT NULL,
+                modalidade TEXT NOT NULL,
+                tipo_contrato TEXT NOT NULL,
+                faixa_salarial TEXT NULL,
+                descricao TEXT NOT NULL,
+                requisitos TEXT NULL,
+                status TEXT NOT NULL DEFAULT 'Aberta',
+                criado_por INTEGER NOT NULL REFERENCES usuarios (id) ON DELETE CASCADE,
+                criado_em TEXT NOT NULL,
+                atualizado_em TEXT NULL
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_vagas_criado_por ON vagas (criado_por);
+            CREATE INDEX IF NOT EXISTS idx_vagas_status ON vagas (status);
+
+            -- Candidato inscrito numa vaga (pelo currículo dele). Uma inscrição por vaga.
+            CREATE TABLE IF NOT EXISTS candidaturas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                vaga_id INTEGER NOT NULL REFERENCES vagas (id) ON DELETE CASCADE,
+                curriculo_id INTEGER NOT NULL REFERENCES curriculos (id) ON DELETE CASCADE,
+                criado_em TEXT NOT NULL,
+                UNIQUE (vaga_id, curriculo_id)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_candidaturas_curriculo ON candidaturas (curriculo_id);
+
+            -- Empresas clientes: administradores da mesma empresa compartilham as vagas
+            CREATE TABLE IF NOT EXISTS empresas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL UNIQUE COLLATE NOCASE,
+                criado_em TEXT NOT NULL
+            );
+
+            -- Cada mudança de status de uma candidatura (linha do tempo do candidato)
+            CREATE TABLE IF NOT EXISTS candidatura_historico (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                candidatura_id INTEGER NOT NULL REFERENCES candidaturas (id) ON DELETE CASCADE,
+                status TEXT NOT NULL,
+                criado_em TEXT NOT NULL
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_historico_candidatura ON candidatura_historico (candidatura_id);
+
+            -- Vagas que o candidato guardou para decidir depois
+            CREATE TABLE IF NOT EXISTS vagas_salvas (
+                usuario_id INTEGER NOT NULL REFERENCES usuarios (id) ON DELETE CASCADE,
+                vaga_id INTEGER NOT NULL REFERENCES vagas (id) ON DELETE CASCADE,
+                criado_em TEXT NOT NULL,
+                PRIMARY KEY (usuario_id, vaga_id)
+            );
         ";
 
-        // Liga cada currículo à conta do candidato dono dele (bancos antigos não têm a coluna).
-        // Excluir a conta apaga o currículo junto (ON DELETE CASCADE).
-        private const string SqlVinculoCurriculoUsuario = @"
-            ALTER TABLE curriculos ADD COLUMN usuario_id INTEGER NULL
-                REFERENCES usuarios (id) ON DELETE CASCADE;";
+        // Colunas acrescentadas depois da primeira versão: bancos antigos ganham a coluna
+        // na inicialização (o SQLite não tem "ADD COLUMN IF NOT EXISTS").
+        private static readonly (string Tabela, string Coluna, string Definicao)[] ColunasNovas =
+        {
+            // Dono do currículo; excluir a conta apaga o currículo junto
+            ("curriculos", "usuario_id", "INTEGER NULL REFERENCES usuarios (id) ON DELETE CASCADE"),
+            ("usuarios", "empresa_id", "INTEGER NULL REFERENCES empresas (id) ON DELETE SET NULL"),
+            ("vagas", "empresa_id", "INTEGER NULL REFERENCES empresas (id) ON DELETE SET NULL"),
+            ("convites", "empresa_id", "INTEGER NULL REFERENCES empresas (id) ON DELETE SET NULL"),
+            // Status de cada candidatura (definido pela empresa dona da vaga)
+            ("candidaturas", "status", "TEXT NOT NULL DEFAULT 'Novo'"),
+            ("candidaturas", "atualizado_em", "TEXT NULL")
+        };
 
-        // Um candidato tem no máximo um currículo
-        private const string SqlIndiceCurriculoUsuario = @"
+        // Índices e ajustes que dependem das colunas novas
+        private const string SqlDepoisDasColunas = @"
+            -- Um candidato tem no máximo um currículo
             CREATE UNIQUE INDEX IF NOT EXISTS idx_curriculos_usuario
-                ON curriculos (usuario_id) WHERE usuario_id IS NOT NULL;";
+                ON curriculos (usuario_id) WHERE usuario_id IS NOT NULL;
+            CREATE INDEX IF NOT EXISTS idx_usuarios_empresa ON usuarios (empresa_id);
+            CREATE INDEX IF NOT EXISTS idx_vagas_empresa ON vagas (empresa_id);
+
+            -- Candidaturas antigas ganham o primeiro passo da linha do tempo
+            INSERT INTO candidatura_historico (candidatura_id, status, criado_em)
+            SELECT c.id, c.status, c.criado_em FROM candidaturas c
+            WHERE NOT EXISTS (SELECT 1 FROM candidatura_historico h WHERE h.candidatura_id = c.id);";
+
+        private static void GarantirColuna(SqliteConnection conexao, string tabela, string coluna, string definicao)
+        {
+            using var existe = new SqliteCommand(
+                "SELECT COUNT(*) FROM pragma_table_info(@tabela) WHERE name = @coluna;", conexao);
+            existe.Parameters.AddWithValue("@tabela", tabela);
+            existe.Parameters.AddWithValue("@coluna", coluna);
+            if (Convert.ToInt64(existe.ExecuteScalar()) > 0) return;
+
+            // Nomes vêm da lista fixa acima, nunca de entrada do usuário
+            using var alterar = new SqliteCommand($"ALTER TABLE {tabela} ADD COLUMN {coluna} {definicao};", conexao);
+            alterar.ExecuteNonQuery();
+        }
 
         // Chamado no início do programa. Se der algum problema, só avisa no
         // console: a próxima tela que usar o banco tenta de novo.
@@ -159,19 +245,14 @@ namespace TalentDesk.Repositories
                     comando.ExecuteNonQuery();
                 }
 
-                using (var existe = new SqliteCommand(
-                    "SELECT COUNT(*) FROM pragma_table_info('curriculos') WHERE name = 'usuario_id';", conexao))
+                foreach (var (tabela, coluna, definicao) in ColunasNovas)
                 {
-                    if (Convert.ToInt64(existe.ExecuteScalar()) == 0)
-                    {
-                        using var alterar = new SqliteCommand(SqlVinculoCurriculoUsuario, conexao);
-                        alterar.ExecuteNonQuery();
-                    }
+                    GarantirColuna(conexao, tabela, coluna, definicao);
                 }
 
-                using (var indice = new SqliteCommand(SqlIndiceCurriculoUsuario, conexao))
+                using (var ajustes = new SqliteCommand(SqlDepoisDasColunas, conexao))
                 {
-                    indice.ExecuteNonQuery();
+                    ajustes.ExecuteNonQuery();
                 }
 
                 using (var contar = new SqliteCommand("SELECT COUNT(*) FROM curriculos;", conexao))

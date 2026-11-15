@@ -10,24 +10,33 @@ namespace TalentDesk
         // (ex.: C:\Users\SeuUsuario\AppData\Local\TalentDesk\talentdesk.db).
         // Fica fora da pasta do projeto para não ser versionado nem sincronizado
         // por serviços de nuvem enquanto está em uso.
-        private static readonly string pastaDoBanco = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TalentDesk");
-
-        public static readonly string CaminhoDoBanco =
-            Path.Combine(pastaDoBanco, "talentdesk.db");
+        public static string CaminhoDoBanco { get; private set; } = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "TalentDesk", "talentdesk.db");
 
         // "Foreign Keys = True" faz o SQLite executar "PRAGMA foreign_keys = ON;" toda
         // vez que a conexão é aberta. Sem isso o ON DELETE CASCADE não funciona.
-        private static readonly string connectionString = new SqliteConnectionStringBuilder
+        private static string connectionString = MontarConnectionString(CaminhoDoBanco);
+
+        // Permite usar outro arquivo (configuração "Banco:Caminho"). Os testes automatizados
+        // usam isso para trabalhar num banco temporário, sem tocar nos dados do dia a dia.
+        public static void DefinirCaminho(string? caminho)
         {
-            DataSource = CaminhoDoBanco,
+            if (string.IsNullOrWhiteSpace(caminho)) return;
+
+            CaminhoDoBanco = Path.GetFullPath(caminho);
+            connectionString = MontarConnectionString(CaminhoDoBanco);
+        }
+
+        private static string MontarConnectionString(string caminho) => new SqliteConnectionStringBuilder
+        {
+            DataSource = caminho,
             ForeignKeys = true
         }.ToString();
 
         public static SqliteConnection CriarConexao()
         {
             // Cria a pasta se não existir. O arquivo .db o próprio SQLite cria ao abrir.
-            Directory.CreateDirectory(pastaDoBanco);
+            Directory.CreateDirectory(Path.GetDirectoryName(CaminhoDoBanco)!);
 
             var conexao = new SqliteConnection(connectionString);
 

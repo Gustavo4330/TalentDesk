@@ -1,0 +1,85 @@
+@model TalentDesk.Models.VagaFormViewModel
+@using TalentDesk.Models
+@{
+    Layout = "_AppLayout";
+    ViewData["Title"] = Model.EhEdicao ? "Editar vaga" : "Nova vaga";
+    ViewData["Menu"] = "vagas";
+}
+
+<section class="formulario-pagina">
+    <header class="secao-cabecalho">
+        <a class="link-voltar" asp-action="@(Model.EhEdicao ? "Detalhes" : "Index")" asp-route-id="@Model.Id">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.7 6.7-1.4-1.4L6.6 12l6.7 6.7 1.4-1.4L9.4 12l5.3-5.3Z"/></svg>
+            Voltar
+        </a>
+        <h2>@ViewData["Title"]</h2>
+        <p>Campos com * são obrigatórios.</p>
+    </header>
+
+    <form method="post" asp-action="@(Model.EhEdicao ? "Editar" : "Nova")" asp-route-id="@Model.Id" class="formulario">
+        <div asp-validation-summary="ModelOnly" class="alerta-erro"></div>
+
+        <fieldset class="form-card">
+            <legend>Dados da vaga</legend>
+            <div class="form-grade">
+                <label class="campo campo-largo">
+                    <span>Título da vaga *</span>
+                    <input asp-for="Titulo" placeholder="Ex.: Desenvolvedor(a) Back-end Pleno" />
+                    <span asp-validation-for="Titulo" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>Empresa *</span>
+                    <input asp-for="Empresa" placeholder="Nome exibido para os candidatos" />
+                    <span asp-validation-for="Empresa" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>Área *</span>
+                    <input asp-for="Area" list="sugestoesAreas" placeholder="Ex.: Tecnologia" />
+                    <span asp-validation-for="Area" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>Cidade *</span>
+                    <input asp-for="Cidade" list="sugestoesCidades" placeholder="São Paulo, SP" />
+                    <span asp-validation-for="Cidade" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>Modalidade *</span>
+                    <select asp-for="Modalidade" asp-items="@(new SelectList(OpcoesVaga.Modalidades))"></select>
+                    <span asp-validation-for="Modalidade" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>Tipo de contrato *</span>
+                    <select asp-for="TipoContrato" asp-items="@(new SelectList(OpcoesVaga.TiposContrato))"></select>
+                    <span asp-validation-for="TipoContrato" class="erro"></span>
+                </label>
+                <label class="campo">
+                    <span>Faixa salarial</span>
+                    <input asp-for="FaixaSalarial" placeholder="Ex.: R$ 6.000 a R$ 8.000" />
+                    <span asp-validation-for="FaixaSalarial" class="erro"></span>
+                </label>
+                <label class="campo campo-inteiro">
+                    <span>Descrição *</span>
+                    <textarea asp-for="Descricao" rows="6" placeholder="Atividades, time, benefícios..."></textarea>
+                    <span asp-validation-for="Descricao" class="erro"></span>
+                </label>
+                <label class="campo campo-inteiro">
+                    <span>Requisitos (um por linha)</span>
+                    <textarea asp-for="Requisitos" rows="5" placeholder="Experiência com C#&#10;Inglês intermediário"></textarea>
+                    <span asp-validation-for="Requisitos" class="erro"></span>
+                </label>
+            </div>
+        </fieldset>
+
+        <div class="formulario-acoes">
+            <a class="btn btn-outline" asp-action="@(Model.EhEdicao ? "Detalhes" : "Index")" asp-route-id="@Model.Id">Cancelar</a>
+            <button type="submit" class="btn btn-primary">@(Model.EhEdicao ? "Salvar alterações" : "Publicar vaga")</button>
+        </div>
+
+        <datalist id="sugestoesAreas">
+            @foreach (var area in Model.SugestoesAreas) { <option value="@area"></option> }
+        </datalist>
+        <datalist id="sugestoesCidades">
+            @foreach (var cidade in Model.SugestoesCidades) { <option value="@cidade"></option> }
+        </datalist>
+    </form>
+</section>

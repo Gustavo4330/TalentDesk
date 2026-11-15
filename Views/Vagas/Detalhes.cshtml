@@ -1,0 +1,169 @@
+@model TalentDesk.Models.VagaDetalhesViewModel
+@using TalentDesk.Models
+@{
+    Layout = "_AppLayout";
+    var vaga = Model.Vaga;
+    ViewData["Title"] = vaga.Titulo;
+    ViewData["Menu"] = "vagas";
+    string paginaAtual = Context.Request.Path + Context.Request.QueryString;
+}
+
+<section class="vaga-detalhes">
+    <a class="link-voltar" asp-action="Index">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.7 6.7-1.4-1.4L6.6 12l6.7 6.7 1.4-1.4L9.4 12l5.3-5.3Z"/></svg>
+        @(Model.EhDono ? "Minhas vagas" : "Vagas")
+    </a>
+
+    <div class="vaga-detalhes-grade">
+        <article class="form-card vaga-principal">
+            <header class="vaga-principal-topo">
+                <div>
+                    <h2>@vaga.Titulo</h2>
+                    <p>@vaga.Empresa · @vaga.PublicadaHa.ToLowerInvariant()</p>
+                </div>
+                <span class="status @(vaga.Aberta ? "status-aprovado" : "status-reprovado")">@vaga.Status</span>
+            </header>
+
+            <dl class="vaga-ficha">
+                <div><dt>Local</dt><dd>@vaga.Cidade</dd></div>
+                <div><dt>Modalidade</dt><dd>@vaga.Modalidade</dd></div>
+                <div><dt>Contrato</dt><dd>@vaga.TipoContrato</dd></div>
+                <div><dt>Área</dt><dd>@vaga.Area</dd></div>
+                @if (vaga.FaixaSalarial is string salario)
+                {
+                    <div><dt>Faixa salarial</dt><dd>@salario</dd></div>
+                }
+            </dl>
+
+            <h3>Sobre a vaga</h3>
+            <p class="vaga-texto">@vaga.Descricao</p>
+
+            @if (vaga.ListaRequisitos.Any())
+            {
+                <h3>Requisitos</h3>
+                <ul class="vaga-requisitos">
+                    @foreach (var requisito in vaga.ListaRequisitos)
+                    {
+                        <li>@requisito</li>
+                    }
+                </ul>
+            }
+        </article>
+
+        <aside class="vaga-lateral">
+            @if (Model.EhDono)
+            {
+                @* ===== Empresa dona da vaga ===== *@
+                <div class="form-card vaga-acoes">
+                    <p class="vaga-resumo-inscritos"><strong>@vaga.TotalInscritos</strong> @(vaga.TotalInscritos == 1 ? "candidato inscrito" : "candidatos inscritos")</p>
+                    <a class="btn btn-outline btn-bloco" asp-action="Editar" asp-route-id="@vaga.Id">Editar vaga</a>
+                    <form method="post" asp-action="AlterarStatus" asp-route-id="@vaga.Id"
+                          data-confirmar="@(vaga.Aberta ? "Encerrar esta vaga? Ela deixa de receber candidaturas." : null)">
+                        <input type="hidden" name="status" value="@(vaga.Aberta ? StatusVaga.Encerrada : StatusVaga.Aberta)" />
+                        <button type="submit" class="btn btn-bloco @(vaga.Aberta ? "btn-outline perigo" : "btn-primary")">
+                            @(vaga.Aberta ? "Encerrar vaga" : "Reabrir vaga")
+                        </button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                @* ===== Candidato ===== *@
+                <div class="form-card vaga-acoes">
+                    @if (vaga.JaCandidatado)
+                    {
+                        <p class="vaga-inscrito-aviso">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20Zm-1.2 13.6 6.3-6.3-1.4-1.4-4.9 4.9-2.3-2.3-1.4 1.4 3.7 3.7Z"/></svg>
+                            Você se candidatou a esta vaga.
+                        </p>
+                        <p class="vaga-status-candidatura">
+                            Status da sua candidatura:
+                            <span class="status @StatusCurriculo.ClasseCss(vaga.StatusCandidatura!)">@vaga.StatusCandidatura</span>
+                        </p>
+                        <a class="btn btn-outline btn-bloco" asp-controller="Inicio" asp-action="Index">Ver andamento das candidaturas</a>
+                        <form method="post" asp-action="CancelarCandidatura" asp-route-id="@vaga.Id" data-confirmar="Cancelar sua candidatura a esta vaga?">
+                            <button type="submit" class="btn btn-outline btn-bloco perigo">Cancelar candidatura</button>
+                        </form>
+                    }
+                    else if (!vaga.Aberta)
+                    {
+                        <p class="painel-texto">Esta vaga foi encerrada e não recebe mais candidaturas.</p>
+                    }
+                    else if (!Model.TemCurriculo)
+                    {
+                        <p class="painel-texto">Cadastre seu currículo para se candidatar.</p>
+                        <a class="btn btn-primary btn-bloco" asp-controller="Curriculo" asp-action="Cadastrar">Cadastrar currículo</a>
+                    }
+                    else
+                    {
+                        <p class="painel-texto">A empresa verá o seu currículo atual do Talent Desk.</p>
+                        <form method="post" asp-action="Candidatar" asp-route-id="@vaga.Id">
+                            <button type="submit" class="btn btn-primary btn-lg btn-bloco">Candidatar-se</button>
+                        </form>
+                    }
+
+                    <form method="post" asp-action="AlternarSalva" asp-route-id="@vaga.Id">
+                        <input type="hidden" name="returnUrl" value="@paginaAtual" />
+                        <button type="submit" class="btn btn-outline btn-bloco" aria-pressed="@(vaga.Salva ? "true" : "false")">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="@(vaga.Salva ? "M6 2h12a1 1 0 0 1 1 1v19l-7-4-7 4V3a1 1 0 0 1 1-1Z" : "M6 2h12a1 1 0 0 1 1 1v19l-7-4-7 4V3a1 1 0 0 1 1-1Zm1 2v14.6l5-2.9 5 2.9V4H7Z")"/></svg>
+                            @(vaga.Salva ? "Salva" : "Salvar vaga")
+                        </button>
+                    </form>
+                </div>
+            }
+        </aside>
+    </div>
+
+    @if (Model.EhDono)
+    {
+        @* ===== Quadro de inscritos: uma coluna por etapa desta vaga ===== *@
+        <section class="quadro-secao" id="quadro" aria-labelledby="tituloQuadro">
+            <header class="vaga-inscritos-topo">
+                <h3 id="tituloQuadro">Processo seletivo</h3>
+                <span class="contador">@Model.Inscritos.Count</span>
+                <p class="painel-texto">O status vale só para esta vaga: o candidato acompanha cada etapa.</p>
+            </header>
+
+            @if (Model.Inscritos.Count == 0)
+            {
+                <p class="form-card painel-texto">Ninguém se candidatou ainda.</p>
+            }
+            else
+            {
+                <div class="quadro">
+                    @foreach (var (status, inscritos) in Model.Quadro)
+                    {
+                        <section class="quadro-coluna" aria-label="@status: @inscritos.Count">
+                            <header class="quadro-coluna-topo">
+                                <span class="status-ponto @StatusCurriculo.ClasseCss(status)"></span>
+                                <h4>@status</h4>
+                                <span class="contador">@inscritos.Count</span>
+                            </header>
+                            @foreach (var inscrito in inscritos)
+                            {
+                                <article class="quadro-cartao">
+                                    <strong>@inscrito.Nome</strong>
+                                    <span>@inscrito.Cargo</span>
+                                    <small>@inscrito.Cidade · @inscrito.ExperienciaTexto</small>
+                                    <div class="quadro-cartao-acoes">
+                                        <a class="link" asp-controller="Curriculo" asp-action="Index" asp-route-visao="curriculos" asp-route-selecionado="@inscrito.CurriculoId" asp-fragment="painel">Ver currículo</a>
+                                        <form method="post" asp-action="AlterarStatusCandidatura" asp-route-id="@inscrito.CandidaturaId" class="quadro-mover">
+                                            <label class="sr-only" for="mover-@inscrito.CandidaturaId">Mover @inscrito.Nome para</label>
+                                            <select id="mover-@inscrito.CandidaturaId" name="status" data-auto-submit>
+                                                @foreach (var opcao in StatusCurriculo.Todos)
+                                                {
+                                                    <option value="@opcao" selected="@(opcao == inscrito.Status)">@(opcao == inscrito.Status ? $"Etapa: {opcao}" : $"Mover para {opcao}")</option>
+                                                }
+                                            </select>
+                                            <noscript><button type="submit" class="btn btn-outline btn-sm">Mover</button></noscript>
+                                        </form>
+                                    </div>
+                                </article>
+                            }
+                        </section>
+                    }
+                </div>
+            }
+        </section>
+    }
+</section>

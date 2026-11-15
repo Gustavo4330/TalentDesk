@@ -1,5 +1,5 @@
-/bin
-/obj
+bin/
+obj/
 .vs/
 *.user
 
@@ -10,3 +10,10 @@ wwwroot/uploads/
 *.db
 *.db-shm
 *.db-wal
+
+# Ferramentas locais (configuração do editor e cache de lint de design)
+.claude/
+.impeccable/
+
+# Resultados de testes
+TestResults/

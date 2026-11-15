@@ -19,7 +19,7 @@
         </div>
 
         <h1>Bem-vindo(a)!</h1>
-        <p class="entrar-subtitulo">Você foi convidado(a) para administrar sua empresa no Talent Desk. Crie sua senha para começar.</p>
+        <p class="entrar-subtitulo">Você foi convidado(a) para administrar <strong>@(Model.EmpresaNome ?? "sua empresa")</strong> no Talent Desk. Crie sua senha para começar.</p>
 
         <form method="post" asp-action="Convite" asp-route-token="@token" class="formulario">
             <div asp-validation-summary="ModelOnly" class="alerta-erro"></div>

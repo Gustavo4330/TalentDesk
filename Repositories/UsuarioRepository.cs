@@ -41,7 +41,7 @@ namespace TalentDesk.Repositories
             using var conexao = AbrirConexao();
 
             string sql = @"
-                SELECT id, nome, email, senha_hash, whatsapp, data_nascimento, foto_url
+                SELECT id, nome, email, senha_hash, whatsapp, data_nascimento, foto_url, empresa_id
                 FROM usuarios
                 WHERE email = @email;
             ";
@@ -64,7 +64,8 @@ namespace TalentDesk.Repositories
                 Whatsapp = leitor["whatsapp"] as string,
                 // A data vem como texto (ou nula) e é convertida com segurança
                 DataNascimento = BancoDeDados.LerData(leitor["data_nascimento"]),
-                FotoUrl = leitor["foto_url"] as string
+                FotoUrl = leitor["foto_url"] as string,
+                EmpresaId = leitor["empresa_id"] is long empresaId ? (int)empresaId : null
             };
         }
 
@@ -218,10 +219,13 @@ namespace TalentDesk.Repositories
                     }
                 }
 
+                // A conta criada por convite entra na empresa do convite
                 using var comandoUsuario = new SqliteCommand(@"
-                    INSERT INTO usuarios (nome, email, senha_hash, whatsapp, data_nascimento, foto_url)
-                    VALUES (@nome, @email, @senha_hash, @whatsapp, @data_nascimento, @foto_url);
+                    INSERT INTO usuarios (nome, email, senha_hash, whatsapp, data_nascimento, foto_url, empresa_id)
+                    VALUES (@nome, @email, @senha_hash, @whatsapp, @data_nascimento, @foto_url,
+                            (SELECT empresa_id FROM convites WHERE id = @convite_id));
                     SELECT last_insert_rowid();", conexao, transacao);
+                comandoUsuario.Parameters.AddWithValue("@convite_id", (object?)conviteId ?? DBNull.Value);
 
                 comandoUsuario.Parameters.AddWithValue("@nome", usuario.Nome);
                 comandoUsuario.Parameters.AddWithValue("@email", usuario.Email);

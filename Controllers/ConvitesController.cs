@@ -12,6 +12,7 @@ namespace TalentDesk.Controllers
     public class ConvitesController : Controller
     {
         private readonly ConviteRepository _conviteRepository = new();
+        private readonly EmpresaRepository _empresaRepository = new();
 
         [HttpGet]
         public IActionResult Index()
@@ -28,19 +29,21 @@ namespace TalentDesk.Controllers
                 return View(nameof(Index), MontarTela(form));
             }
 
-            string token = _conviteRepository.Criar(form.Email, SessaoUsuario.Id(HttpContext.Session));
+            int empresaId = _empresaRepository.ObterOuCriar(form.Empresa);
+            string token = _conviteRepository.Criar(form.Email, empresaId, SessaoUsuario.Id(HttpContext.Session));
 
             // O token não fica salvo em lugar nenhum: o link só aparece nesta resposta
             var tela = MontarTela(new NovoConviteForm());
             tela.LinkGerado = Url.Action("Convite", "Usuario", new { token }, Request.Scheme);
-            tela.EmailGerado = form.Email.Trim();
+            tela.EmailGerado = $"{form.Email.Trim()} ({form.Empresa.Trim()})";
             return View(nameof(Index), tela);
         }
 
         private ConvitesViewModel MontarTela(NovoConviteForm form) => new()
         {
             Form = form,
-            Convites = _conviteRepository.ListarRecentes()
+            Convites = _conviteRepository.ListarRecentes(),
+            Empresas = _empresaRepository.Listar().Select(e => e.Nome).ToList()
         };
     }
 }
