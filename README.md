@@ -10,6 +10,8 @@ Sistema web de **gestão de currículos** para equipes de recrutamento: cadastra
 
 > Projeto acadêmico em grupo (Técnico em Desenvolvimento de Sistemas, ETEC). Todos os currículos do sistema são **fictícios**, criados apenas para demonstração.
 
+**Desenvolvido por:** Gustavo Calderon Moreira, Kauã Vinicius, Felipe Nunes, Rafael Sodré e Pedro Henrique.
+
 
 ## O que o sistema resolve
 
